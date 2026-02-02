@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/theme/app_theme.dart';
-import 'routes/app_routes.dart';
+import 'presentation/routes/app_routes.dart';
 import 'data/models/user_model.dart';
 import 'data/models/habit_model.dart';
 import 'core/di/service_locator.dart';
-import 'abstracts/i_auth_repository.dart';
-import 'abstracts/i_habit_repository.dart';
-import 'viewmodels/theme_viewmodel.dart';
+import 'domain/repositories/i_auth_repository.dart';
+import 'domain/repositories/i_habit_repository.dart';
+import 'presentation/viewmodels/theme_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

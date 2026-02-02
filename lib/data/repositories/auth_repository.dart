@@ -1,27 +1,45 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habits_app/data/models/user_model.dart';
+import 'package:habits_app/domain/entities/user_entity.dart';
+import 'package:habits_app/domain/repositories/i_auth_repository.dart';
+import 'package:habits_app/core/constants/app_values.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:habits_app/abstracts/i_auth_repository.dart';
 
 class AuthRepository implements IAuthRepository {
-  static const String _userBoxName = 'userBox';
-  static const String _sessionBoxName = 'sessionBox';
-  static const String _currentUserKey = 'currentUser';
-
   @override
   Future<void> init() async {
-    await Hive.openBox<UserModel>(_userBoxName);
-    await Hive.openBox(_sessionBoxName);
+    await Hive.openBox<UserModel>(AppValues.userBoxName);
+    await Hive.openBox(AppValues.sessionBoxName);
   }
 
   String _hashPassword(String password) {
     return sha256.convert(utf8.encode(password)).toString();
   }
 
+  // Convert UserModel to UserEntity
+  UserEntity _toEntity(UserModel model) {
+    return UserEntity(
+      id: model.id,
+      email: model.email,
+      name: model.name,
+      password: model.password,
+    );
+  }
+
+  // Convert UserEntity to UserModel
+  UserModel _toModel(UserEntity entity) {
+    return UserModel(
+      id: entity.id,
+      email: entity.email,
+      name: entity.name,
+      password: entity.password,
+    );
+  }
+
   @override
   Future<bool> register(String name, String email, String password) async {
-    final box = Hive.box<UserModel>(_userBoxName);
+    final box = Hive.box<UserModel>(AppValues.userBoxName);
     if (box.values.any((u) => u.email == email)) {
       return false;
     }
@@ -38,8 +56,8 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<UserModel?> login(String email, String password) async {
-    final box = Hive.box<UserModel>(_userBoxName);
+  Future<UserEntity?> login(String email, String password) async {
+    final box = Hive.box<UserModel>(AppValues.userBoxName);
     final hashedPassword = _hashPassword(password);
 
     try {
@@ -48,27 +66,27 @@ class AuthRepository implements IAuthRepository {
       );
 
       await _setCurrentUser(user);
-      return user;
+      return _toEntity(user);
     } catch (_) {
       return null;
     }
   }
 
   Future<void> _setCurrentUser(UserModel user) async {
-    final sessionBox = Hive.box(_sessionBoxName);
-    await sessionBox.put(_currentUserKey, user.id);
+    final sessionBox = Hive.box(AppValues.sessionBoxName);
+    await sessionBox.put(AppValues.currentUserKey, user.id);
   }
 
   @override
-  Future<UserModel?> getCurrentUser() async {
-    final sessionBox = Hive.box(_sessionBoxName);
-    final userId = sessionBox.get(_currentUserKey);
+  Future<UserEntity?> getCurrentUser() async {
+    final sessionBox = Hive.box(AppValues.sessionBoxName);
+    final userId = sessionBox.get(AppValues.currentUserKey);
 
     if (userId == null) return null;
 
-    final box = Hive.box<UserModel>(_userBoxName);
+    final box = Hive.box<UserModel>(AppValues.userBoxName);
     try {
-      return box.values.firstWhere((u) => u.id == userId);
+      return _toEntity(box.values.firstWhere((u) => u.id == userId));
     } catch (_) {
       return null;
     }
@@ -76,20 +94,20 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<void> logout() async {
-    final sessionBox = Hive.box(_sessionBoxName);
-    await sessionBox.delete(_currentUserKey);
+    final sessionBox = Hive.box(AppValues.sessionBoxName);
+    await sessionBox.delete(AppValues.currentUserKey);
   }
 
   @override
-  Future<void> updateUser(UserModel user) async {
-    final box = Hive.box<UserModel>(_userBoxName);
+  Future<void> updateUser(UserEntity user) async {
+    final box = Hive.box<UserModel>(AppValues.userBoxName);
     final userToUpdate = box.values.firstWhere((u) => u.id == user.id);
-    await box.put(userToUpdate.key, user);
+    await box.put(userToUpdate.key, _toModel(user));
   }
 
   @override
   Future<void> deleteUser(String userId) async {
-    final box = Hive.box<UserModel>(_userBoxName);
+    final box = Hive.box<UserModel>(AppValues.userBoxName);
     final userToDelete = box.values.firstWhere((u) => u.id == userId);
     await userToDelete.delete();
     

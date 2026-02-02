@@ -1,40 +1,76 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habits_app/data/models/habit_model.dart';
-import 'package:habits_app/abstracts/i_habit_repository.dart';
+import 'package:habits_app/domain/entities/habit_entity.dart';
+import 'package:habits_app/domain/repositories/i_habit_repository.dart';
+import 'package:habits_app/core/constants/app_values.dart';
 
 class HabitRepository implements IHabitRepository {
-  static const String _habitBoxName = 'habitBox';
-
   @override
   Future<void> init() async {
-    await Hive.openBox<HabitModel>(_habitBoxName);
+    await Hive.openBox<HabitModel>(AppValues.habitBoxName);
   }
 
-  Box<HabitModel> get _box => Hive.box<HabitModel>(_habitBoxName);
+  Box<HabitModel> get _box => Hive.box<HabitModel>(AppValues.habitBoxName);
 
-  @override
-  Future<void> addHabit(HabitModel habit) async {
-    await _box.add(habit);
+  // Convert HabitModel to HabitEntity
+  HabitEntity _toEntity(HabitModel model) {
+    return HabitEntity(
+      id: model.id,
+      title: model.title,
+      description: model.description,
+      isCompleted: model.isCompleted,
+      createdAt: model.createdAt,
+      icon: model.icon,
+      color: model.color,
+      completionDates: model.completionDates,
+      userId: model.userId,
+    );
+  }
+
+  // Convert HabitEntity to HabitModel
+  HabitModel _toModel(HabitEntity entity) {
+    return HabitModel(
+      id: entity.id,
+      title: entity.title,
+      description: entity.description,
+      isCompleted: entity.isCompleted,
+      createdAt: entity.createdAt,
+      icon: entity.icon,
+      color: entity.color,
+      completionDates: entity.completionDates,
+      userId: entity.userId,
+    );
   }
 
   @override
-  List<HabitModel> getHabitsForUser(String userId) {
-    return _box.values.where((habit) => habit.userId == userId).toList();
+  Future<void> addHabit(HabitEntity habit) async {
+    await _box.add(_toModel(habit));
   }
 
   @override
-  Future<void> updateHabit(dynamic key, HabitModel habit) async {
-    await _box.put(key, habit);
+  List<HabitEntity> getHabitsForUser(String userId) {
+    return _box.values
+        .where((habit) => habit.userId == userId)
+        .map((model) => _toEntity(model))
+        .toList();
   }
 
   @override
-  Future<void> deleteHabit(HabitModel habit) async {
-    await habit.delete();
+  Future<void> updateHabit(String habitId, HabitEntity habit) async {
+    final model = _box.values.firstWhere((m) => m.id == habitId);
+    await _box.put(model.key, _toModel(habit));
   }
 
   @override
-  Future<void> toggleHabitCompletion(HabitModel habit, DateTime date) async {
-    final List<DateTime> newCompletionDates = List.from(habit.completionDates);
+  Future<void> deleteHabit(HabitEntity habit) async {
+    final model = _box.values.firstWhere((m) => m.id == habit.id);
+    await model.delete();
+  }
+
+  @override
+  Future<void> toggleHabitCompletion(HabitEntity habit, DateTime date) async {
+    final model = _box.values.firstWhere((m) => m.id == habit.id);
+    final List<DateTime> newCompletionDates = List.from(model.completionDates);
     final normalizedDate = DateTime(date.year, date.month, date.day);
 
     bool alreadyCompleted = newCompletionDates.any(
@@ -55,11 +91,11 @@ class HabitRepository implements IHabitRepository {
       newCompletionDates.add(normalizedDate);
     }
 
-    final updatedHabit = habit.copyWith(
+    final updatedModel = model.copyWith(
       isCompleted: !alreadyCompleted,
       completionDates: newCompletionDates,
     );
 
-    await _box.put(habit.key, updatedHabit);
+    await _box.put(model.key, updatedModel);
   }
 }

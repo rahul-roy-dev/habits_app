@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import '../constants/app_dimensions.dart';
 
 class AppTheme {
   static ThemeData get darkTheme {
@@ -20,39 +21,45 @@ class AppTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           color: AppColors.primaryText,
-          fontSize: 32,
+          fontSize: AppDimensions.fontSizeMassive,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
           color: AppColors.primaryText,
-          fontSize: 24,
+          fontSize: AppDimensions.fontSizeHuge,
           fontWeight: FontWeight.bold,
         ),
         titleLarge: TextStyle(
           color: AppColors.primaryText,
-          fontSize: 20,
+          fontSize: AppDimensions.fontSizeXxxl,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: TextStyle(color: AppColors.primaryText, fontSize: 16),
-        bodyMedium: TextStyle(color: AppColors.secondaryText, fontSize: 14),
+        bodyLarge: TextStyle(
+          color: AppColors.primaryText,
+          fontSize: AppDimensions.fontSizeXl,
+        ),
+        bodyMedium: TextStyle(
+          color: AppColors.secondaryText,
+          fontSize: AppDimensions.fontSizeLg,
+        ),
       ),
       cardTheme: const CardThemeData(color: AppColors.surface, elevation: 0),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.inputBackground,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           borderSide: const BorderSide(
             color: AppColors.primaryAccent,
-            width: 1,
+            width: AppDimensions.borderWidthThin,
           ),
         ),
         hintStyle: const TextStyle(color: AppColors.secondaryText),
@@ -60,7 +67,9 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primaryAccent.withValues(alpha: 0.2),
+        indicatorColor: AppColors.primaryAccent.withValues(
+          alpha: AppDimensions.opacitySm,
+        ),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: AppColors.primaryAccent);
@@ -89,23 +98,26 @@ class AppTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           color: AppColors.lightPrimaryText,
-          fontSize: 32,
+          fontSize: AppDimensions.fontSizeMassive,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
           color: AppColors.lightPrimaryText,
-          fontSize: 24,
+          fontSize: AppDimensions.fontSizeHuge,
           fontWeight: FontWeight.bold,
         ),
         titleLarge: TextStyle(
           color: AppColors.lightPrimaryText,
-          fontSize: 20,
+          fontSize: AppDimensions.fontSizeXxxl,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: TextStyle(color: AppColors.lightPrimaryText, fontSize: 16),
+        bodyLarge: TextStyle(
+          color: AppColors.lightPrimaryText,
+          fontSize: AppDimensions.fontSizeXl,
+        ),
         bodyMedium: TextStyle(
           color: AppColors.lightSecondaryText,
-          fontSize: 14,
+          fontSize: AppDimensions.fontSizeLg,
         ),
       ),
       cardTheme: const CardThemeData(
@@ -116,18 +128,18 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.lightInputBackground,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           borderSide: const BorderSide(
             color: AppColors.lightPrimaryAccent,
-            width: 1,
+            width: AppDimensions.borderWidthThin,
           ),
         ),
         hintStyle: const TextStyle(color: AppColors.lightSecondaryText),
@@ -135,7 +147,9 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.lightSurface,
-        indicatorColor: AppColors.lightPrimaryAccent.withValues(alpha: 0.2),
+        indicatorColor: AppColors.lightPrimaryAccent.withValues(
+          alpha: AppDimensions.opacitySm,
+        ),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: AppColors.lightPrimaryAccent);

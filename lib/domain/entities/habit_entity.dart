@@ -1,50 +1,27 @@
-import 'package:hive/hive.dart';
-import 'package:habits_app/core/constants/app_values.dart';
-
-part 'habit_model.g.dart';
-
-@HiveType(typeId: AppValues.hiveHabitTypeId)
-class HabitModel extends HiveObject {
-  @HiveField(0)
+class HabitEntity {
   final String id;
-
-  @HiveField(1)
   final String title;
-
-  @HiveField(2)
   final String description;
-
-  @HiveField(3)
   final bool isCompleted;
-
-  @HiveField(4)
   final DateTime createdAt;
-
-  @HiveField(5)
   final String icon;
-
-  @HiveField(6)
   final int color;
-
-  @HiveField(7)
   final List<DateTime> completionDates;
-
-  @HiveField(8)
   final String userId;
 
-  HabitModel({
+  const HabitEntity({
     required this.id,
     required this.title,
-    this.description = AppValues.defaultHabitDescription,
+    this.description = '',
     this.isCompleted = false,
     required this.createdAt,
-    this.icon = AppValues.defaultHabitIcon,
-    this.color = AppValues.defaultHabitColor,
+    this.icon = 'check',
+    this.color = 0xFFA78BFA,
     this.completionDates = const [],
     required this.userId,
   });
 
-  HabitModel copyWith({
+  HabitEntity copyWith({
     String? id,
     String? title,
     String? description,
@@ -55,7 +32,7 @@ class HabitModel extends HiveObject {
     List<DateTime>? completionDates,
     String? userId,
   }) {
-    return HabitModel(
+    return HabitEntity(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -67,4 +44,32 @@ class HabitModel extends HiveObject {
       userId: userId ?? this.userId,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HabitEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          description == other.description &&
+          isCompleted == other.isCompleted &&
+          createdAt == other.createdAt &&
+          icon == other.icon &&
+          color == other.color &&
+          completionDates == other.completionDates &&
+          userId == other.userId;
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        title,
+        description,
+        isCompleted,
+        createdAt,
+        icon,
+        color,
+        completionDates,
+        userId,
+      );
 }
