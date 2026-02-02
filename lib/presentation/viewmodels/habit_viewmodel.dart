@@ -1,24 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
-import 'package:habits_app/domain/repositories/i_habit_repository.dart';
+import 'package:habits_app/domain/usecases/habit/get_habits_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/add_habit_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/update_habit_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/delete_habit_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/toggle_habit_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/get_habit_stats_usecase.dart';
 
+/// ViewModel for managing habit-related UI state
+/// Follows Clean Architecture by depending on Use Cases, not Repositories
 class HabitViewModel extends ChangeNotifier {
-  final IHabitRepository _habitRepository;
+  final GetHabitsUseCase _getHabitsUseCase;
+  final AddHabitUseCase _addHabitUseCase;
+  final UpdateHabitUseCase _updateHabitUseCase;
+  final DeleteHabitUseCase _deleteHabitUseCase;
+  final ToggleHabitUseCase _toggleHabitUseCase;
+  final GetHabitStatsUseCase _getHabitStatsUseCase;
 
-  HabitViewModel({required IHabitRepository repository})
-    : _habitRepository = repository;
+  HabitViewModel({
+    required GetHabitsUseCase getHabitsUseCase,
+    required AddHabitUseCase addHabitUseCase,
+    required UpdateHabitUseCase updateHabitUseCase,
+    required DeleteHabitUseCase deleteHabitUseCase,
+    required ToggleHabitUseCase toggleHabitUseCase,
+    required GetHabitStatsUseCase getHabitStatsUseCase,
+  })  : _getHabitsUseCase = getHabitsUseCase,
+        _addHabitUseCase = addHabitUseCase,
+        _updateHabitUseCase = updateHabitUseCase,
+        _deleteHabitUseCase = deleteHabitUseCase,
+        _toggleHabitUseCase = toggleHabitUseCase,
+        _getHabitStatsUseCase = getHabitStatsUseCase;
 
   List<HabitEntity> _habits = [];
   bool _isLoading = false;
+  String? _currentUserId;
 
   List<HabitEntity> get habits => _habits;
   bool get isLoading => _isLoading;
 
   Future<void> loadHabits(String userId) async {
     _isLoading = true;
+    _currentUserId = userId;
     notifyListeners();
 
-    _habits = _habitRepository.getHabitsForUser(userId);
+    _habits = _getHabitsUseCase.execute(userId);
 
     _isLoading = false;
     notifyListeners();
@@ -31,63 +56,44 @@ class HabitViewModel extends ChangeNotifier {
     int color,
     String userId,
   ) async {
-    final newHabit = HabitEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+    await _addHabitUseCase.execute(
       title: title,
       description: description,
-      createdAt: DateTime.now(),
       icon: icon,
       color: color,
       userId: userId,
     );
-
-    await _habitRepository.addHabit(newHabit);
     await loadHabits(userId);
   }
 
   Future<void> updateHabit(String habitId, HabitEntity habit) async {
-    await _habitRepository.updateHabit(habitId, habit);
+    await _updateHabitUseCase.execute(habitId, habit);
     await loadHabits(habit.userId);
   }
 
   Future<void> toggleHabit(HabitEntity habit, DateTime date) async {
-    await _habitRepository.toggleHabitCompletion(habit, date);
+    await _toggleHabitUseCase.execute(habit, date);
     await loadHabits(habit.userId);
   }
 
   Future<void> deleteHabit(HabitEntity habit) async {
     final userId = habit.userId;
-    await _habitRepository.deleteHabit(habit);
+    await _deleteHabitUseCase.execute(habit);
     await loadHabits(userId);
   }
 
-  int get totalHabits => _habits.length;
+  // Statistics - delegated to use case
+  int get totalHabits => _currentUserId != null 
+      ? _getHabitStatsUseCase.getTotalHabits(_currentUserId!) 
+      : 0;
 
   double getCompletionProgress(DateTime date) {
-    if (_habits.isEmpty) return 0.0;
-
-    int completedCount = 0;
-    for (var habit in _habits) {
-      bool isCompletedOnDate = habit.completionDates.any(
-        (d) =>
-            d.year == date.year && d.month == date.month && d.day == date.day,
-      );
-      if (isCompletedOnDate) completedCount++;
-    }
-
-    return completedCount / _habits.length;
+    if (_currentUserId == null) return 0.0;
+    return _getHabitStatsUseCase.getCompletionProgress(_currentUserId!, date);
   }
 
   int getCompletedCount(DateTime date) {
-    return _habits
-        .where(
-          (habit) => habit.completionDates.any(
-            (d) =>
-                d.year == date.year &&
-                d.month == date.month &&
-                d.day == date.day,
-          ),
-        )
-        .length;
+    if (_currentUserId == null) return 0;
+    return _getHabitStatsUseCase.getCompletedCount(_currentUserId!, date);
   }
 }

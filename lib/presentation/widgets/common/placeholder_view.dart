@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class PlaceholderView extends StatelessWidget {
   final String title;
@@ -13,7 +14,7 @@ class PlaceholderView extends StatelessWidget {
         '$title VIEW',
         style: const TextStyle(
           color: AppColors.secondaryText,
-          fontSize: 24,
+          fontSize: AppDimensions.fontSizeHuge,
           fontWeight: FontWeight.bold,
         ),
       ),

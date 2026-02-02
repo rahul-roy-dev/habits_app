@@ -17,6 +17,7 @@ import 'package:habits_app/presentation/widgets/common/base_dialog.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
+import 'package:habits_app/core/constants/app_values.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -515,24 +516,24 @@ class _DashboardTab extends StatelessWidget {
               child: CustomCard(
                 borderRadius: 0,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+                  horizontal: AppDimensions.spacingMd,
+                  vertical: AppDimensions.spacingSm,
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(AppDimensions.tabVerticalPadding),
                       decoration: BoxDecoration(
-                        color: Color(habit.color).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: Color(habit.color).withValues(alpha: AppDimensions.opacityXs),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
                       ),
                       child: Icon(
                         _getIconData(habit.icon),
                         color: Color(habit.color),
-                        size: 24,
+                        size: AppDimensions.iconSizeSm,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppDimensions.spacingMd),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,7 +544,7 @@ class _DashboardTab extends StatelessWidget {
                               color: isDark
                                   ? AppColors.primaryText
                                   : AppColors.lightPrimaryText,
-                              fontSize: 16,
+                              fontSize: AppDimensions.fontSizeXl,
                               fontWeight: FontWeight.w600,
                               decoration: isCompleted
                                   ? TextDecoration.lineThrough
@@ -556,7 +557,7 @@ class _DashboardTab extends StatelessWidget {
                               color: isDark
                                   ? AppColors.secondaryText
                                   : AppColors.lightSecondaryText,
-                              fontSize: 12,
+                              fontSize: AppDimensions.fontSizeSm,
                             ),
                           ),
                         ],
@@ -572,8 +573,8 @@ class _DashboardTab extends StatelessWidget {
                             : (isDark
                                       ? AppColors.primaryText
                                       : AppColors.lightPrimaryText)
-                                  .withValues(alpha: 0.3),
-                        size: 32,
+                                  .withValues(alpha: AppDimensions.opacityMd),
+                        size: AppDimensions.iconSizeLg,
                       ),
                       onPressed: () =>
                           habitViewModel.toggleHabit(habit, DateTime.now()),
@@ -589,17 +590,6 @@ class _DashboardTab extends StatelessWidget {
   }
 
   IconData _getIconData(String name) {
-    switch (name) {
-      case 'water':
-        return Icons.local_drink;
-      case 'workout':
-        return Icons.fitness_center;
-      case 'book':
-        return Icons.menu_book;
-      case 'meditation':
-        return Icons.self_improvement;
-      default:
-        return Icons.check;
-    }
+    return AppValues.habitIconMap[name] ?? Icons.check;
   }
 }

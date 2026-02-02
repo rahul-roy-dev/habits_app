@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
 import 'package:habits_app/core/di/service_locator.dart';
@@ -57,14 +58,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         centerTitle: true,
         actions: const [
           Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CustomAvatar(initials: 'AR', size: 32),
+             padding: EdgeInsets.only(right: AppDimensions.spacingMd),
+            child: CustomAvatar(initials: 'AR', size: AppDimensions.avatarSizeSm),
           ),
         ],
       ),
       body: SingleChildScrollView(
         controller: widget.scrollController,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppDimensions.spacingLg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -77,32 +78,32 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     isPercentage: true,
                   ),
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: AppDimensions.spacingMd),
                 Expanded(
                   child: StatMiniCard(title: 'BEST\nSTREAK', value: '24 Days'),
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: AppDimensions.spacingXxl),
             _buildHeatmapSection(),
-            const SizedBox(height: 30),
+            const SizedBox(height: AppDimensions.spacingXxl),
             Text(
               'Top Streaks',
               style: TextStyle(
                 color: isDark
                     ? AppColors.primaryText
                     : AppColors.lightPrimaryText,
-                fontSize: 18,
+                fontSize: AppDimensions.fontSizeXxl,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimensions.spacingMd),
             _buildTopStreaks(),
-            const SizedBox(height: 30),
+            const SizedBox(height: AppDimensions.spacingXxl),
             _buildConsistencySection(),
-            const SizedBox(height: 30),
+            const SizedBox(height: AppDimensions.spacingXxl),
             _buildInsightCard(),
-            const SizedBox(height: 30),
+            const SizedBox(height: AppDimensions.spacingXxl),
           ],
         ),
       ),
@@ -125,7 +126,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     color: isDark
                         ? AppColors.primaryText
                         : AppColors.lightPrimaryText,
-                    fontSize: 18,
+                    fontSize: AppDimensions.fontSizeXxl,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -135,21 +136,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     color: isDark
                         ? AppColors.secondaryText
                         : AppColors.lightSecondaryText,
-                    fontSize: 10,
+                    fontSize: AppDimensions.fontSizeXxs,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimensions.spacingMd),
             CustomCard(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppDimensions.spacingMd),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day) {
-                  final opacity =
-                      (day == 'M' || day == 'W' || day == 'T' || day == 'S')
-                      ? 0.8
-                      : 0.1;
+                  final opacity = (day == 'M' || day == 'W' || day == 'T' || day == 'S')
+                       ? AppDimensions.opacityHigh
+                      : AppDimensions.opacityXxs;
                   return Column(
                     children: [
                       Text(
@@ -158,20 +158,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           color: isDark
                               ? AppColors.secondaryText
                               : AppColors.lightSecondaryText,
-                          fontSize: 10,
+                          fontSize: AppDimensions.fontSizeXxs,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppDimensions.spacingXs),
                       Container(
-                        width: 32,
-                        height: 32,
+                        width: AppDimensions.avatarSizeSm,
+                        height: AppDimensions.avatarSizeSm,
                         decoration: BoxDecoration(
                           color:
                               (isDark
                                       ? AppColors.primaryAccent
                                       : AppColors.lightPrimaryAccent)
                                   .withValues(alpha: opacity),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppDimensions.heatmapContainerRadius),
                         ),
                       ),
                     ],
@@ -187,7 +187,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Widget _buildTopStreaks() {
     return SizedBox(
-      height: 160,
+      height: AppDimensions.cardHeightLg * 2,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: const [
@@ -197,14 +197,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             progress: 0.7,
             icon: Icons.wb_sunny_outlined,
           ),
-          SizedBox(width: 16),
+          SizedBox(width: AppDimensions.spacingMd),
           StreakCard(
             title: 'HYDRATION',
             value: '8 Days',
             progress: 0.4,
             icon: Icons.local_drink,
           ),
-          SizedBox(width: 16),
+          SizedBox(width: AppDimensions.spacingMd),
           StreakCard(
             title: 'READING',
             value: '15 Days',
@@ -232,15 +232,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     color: isDark
                         ? AppColors.primaryText
                         : AppColors.lightPrimaryText,
-                    fontSize: 18,
+                    fontSize: AppDimensions.fontSizeXxl,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(AppDimensions.spacingXxs),
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.surface : AppColors.lightSurface,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppDimensions.spacingXs),
                   ),
                   child: const Row(
                     children: [
@@ -251,35 +251,35 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimensions.spacingMd),
             CustomCard(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppDimensions.spacingLg),
               child: Column(
                 children: [
                   SizedBox(
-                    height: 150,
+                     height: AppDimensions.chartHeight,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [60, 80, 70, 100, 75, 85, 40, 90, 100]
                           .map(
                             (h) => Container(
-                              width: 20,
-                              height: h * 1.5,
-                              decoration: BoxDecoration(
-                                color:
-                                    (isDark
-                                            ? AppColors.primaryAccent
-                                            : AppColors.lightPrimaryAccent)
-                                        .withValues(alpha: h > 80 ? 1.0 : 0.4),
-                                borderRadius: BorderRadius.circular(6),
+                        width: AppDimensions.chartBarWidth,
+                        height: h * 1.5,
+                        decoration: BoxDecoration(
+                          color:
+                              (isDark
+                                      ? AppColors.primaryAccent
+                                      : AppColors.lightPrimaryAccent)
+                                  .withValues(alpha: h > 80 ? 1.0 : AppDimensions.opacityMd),
+                          borderRadius: BorderRadius.circular(AppDimensions.chartBarRadius),
                               ),
                             ),
                           )
                           .toList(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppDimensions.spacingMd),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -289,7 +289,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           color: isDark
                               ? AppColors.secondaryText
                               : AppColors.lightSecondaryText,
-                          fontSize: 10,
+                          fontSize: AppDimensions.fontSizeXxs,
                         ),
                       ),
                       Text(
@@ -299,8 +299,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               (isDark
                                       ? AppColors.primaryText
                                       : AppColors.lightPrimaryText)
-                                  .withValues(alpha: 0.5),
-                          fontSize: 10,
+                                  .withValues(alpha: AppDimensions.opacityHalf),
+                          fontSize: AppDimensions.fontSizeXxs,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -310,7 +310,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           color: isDark
                               ? AppColors.secondaryText
                               : AppColors.lightSecondaryText,
-                          fontSize: 10,
+                          fontSize: AppDimensions.fontSizeXxs,
                         ),
                       ),
                     ],
@@ -330,24 +330,24 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return CustomCard(
           color: (isDark ? AppColors.surface : AppColors.lightSurface)
-              .withValues(alpha: 0.3),
+              .withValues(alpha: AppDimensions.opacityMd),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                   padding: const EdgeInsets.all(AppDimensions.spacingXs),
                 decoration: BoxDecoration(
                   color: isDark ? AppColors.surface : AppColors.lightSurface,
-                  borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
                 ),
                 child: Icon(
                   Icons.auto_awesome,
                   color: isDark
                       ? AppColors.primaryAccent
                       : AppColors.lightPrimaryAccent,
-                  size: 24,
+                   size: AppDimensions.iconSizeSm,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppDimensions.spacingMd),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,14 +361,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppDimensions.spacingXxs),
                     Text(
                       "You're most productive during early hours. Try setting your high-effort habits before 9 AM for a 30% higher success rate.",
                       style: TextStyle(
                         color: isDark
                             ? AppColors.secondaryText
                             : AppColors.lightSecondaryText,
-                        fontSize: 12,
+                        fontSize: AppDimensions.fontSizeSm,
                       ),
                     ),
                   ],

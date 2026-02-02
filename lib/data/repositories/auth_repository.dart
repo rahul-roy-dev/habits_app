@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habits_app/data/models/user_model.dart';
 import 'package:habits_app/domain/entities/user_entity.dart';
-import 'package:habits_app/domain/repositories/i_auth_repository.dart';
+import 'package:habits_app/domain/repositories/auth/i_auth_repository.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -37,6 +37,13 @@ class AuthRepository implements IAuthRepository {
     );
   }
 
+  Future<void> _setCurrentUser(UserModel user) async {
+    final sessionBox = Hive.box(AppValues.sessionBoxName);
+    await sessionBox.put(AppValues.currentUserKey, user.id);
+  }
+
+  // ========== IUserRegistration Implementation ==========
+
   @override
   Future<bool> register(String name, String email, String password) async {
     final box = Hive.box<UserModel>(AppValues.userBoxName);
@@ -55,6 +62,8 @@ class AuthRepository implements IAuthRepository {
     return true;
   }
 
+  // ========== IAuthenticator Implementation ==========
+
   @override
   Future<UserEntity?> login(String email, String password) async {
     final box = Hive.box<UserModel>(AppValues.userBoxName);
@@ -70,11 +79,6 @@ class AuthRepository implements IAuthRepository {
     } catch (_) {
       return null;
     }
-  }
-
-  Future<void> _setCurrentUser(UserModel user) async {
-    final sessionBox = Hive.box(AppValues.sessionBoxName);
-    await sessionBox.put(AppValues.currentUserKey, user.id);
   }
 
   @override
@@ -97,6 +101,8 @@ class AuthRepository implements IAuthRepository {
     final sessionBox = Hive.box(AppValues.sessionBoxName);
     await sessionBox.delete(AppValues.currentUserKey);
   }
+
+  // ========== IUserManager Implementation ==========
 
   @override
   Future<void> updateUser(UserEntity user) async {

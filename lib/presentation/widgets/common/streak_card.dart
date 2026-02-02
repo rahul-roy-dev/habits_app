@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class StreakCard extends StatelessWidget {
   final String title;
@@ -19,11 +20,11 @@ class StreakCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: 140,
-      padding: const EdgeInsets.all(16),
+      width: AppDimensions.streakCardWidth,
+      padding: const EdgeInsets.all(AppDimensions.spacingMd),
       decoration: BoxDecoration(
         color: isDark ? AppColors.surface : AppColors.lightSurface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
       ),
       child: Column(
         children: [
@@ -31,16 +32,16 @@ class StreakCard extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 60,
-                height: 60,
+                width: AppDimensions.streakProgressSize,
+                height: AppDimensions.streakProgressSize,
                 child: CircularProgressIndicator(
                   value: progress,
-                  strokeWidth: 4,
+                  strokeWidth: AppDimensions.streakProgressStrokeWidth,
                   backgroundColor:
                       (isDark
                               ? AppColors.primaryAccent
                               : AppColors.lightPrimaryAccent)
-                          .withValues(alpha: 0.1),
+                          .withValues(alpha: AppDimensions.opacityXs),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     isDark
                         ? AppColors.primaryAccent
@@ -53,11 +54,11 @@ class StreakCard extends StatelessWidget {
                 color: isDark
                     ? AppColors.primaryAccent
                     : AppColors.lightPrimaryAccent,
-                size: 24,
+                size: AppDimensions.iconSizeSm,
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimensions.spacingMd),
           Text(
             value,
             style: TextStyle(
@@ -65,7 +66,7 @@ class StreakCard extends StatelessWidget {
                   ? AppColors.primaryText
                   : AppColors.lightPrimaryText,
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: AppDimensions.fontSizeXl,
             ),
           ),
           Text(
@@ -74,7 +75,7 @@ class StreakCard extends StatelessWidget {
               color: isDark
                   ? AppColors.secondaryText
                   : AppColors.lightSecondaryText,
-              fontSize: 8,
+              fontSize: AppDimensions.fontSizeStreakTitle,
               fontWeight: FontWeight.bold,
             ),
           ),

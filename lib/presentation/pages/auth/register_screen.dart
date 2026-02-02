@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/widgets/common/custom_button.dart';
 import 'package:habits_app/presentation/widgets/common/custom_input.dart';
 import 'package:habits_app/presentation/widgets/common/custom_toast.dart';
@@ -44,34 +45,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [     
                 SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(AppDimensions.spacingXl),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 24),
+                          const SizedBox(height: AppDimensions.spacingXl),
                           Text(
                             'Create Your\nAccount',
                             style: TextStyle(
-                              fontSize: 32,
+                              fontSize: AppDimensions.fontSizeMassive,
                               fontWeight: FontWeight.bold,
                               color: isDark
                                   ? AppColors.primaryText
                                   : AppColors.lightPrimaryText,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppDimensions.spacingXs),
                           Text(
                             'Join the community and start building better habits today.',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: AppDimensions.fontSizeXl,
                               color: isDark
                                   ? AppColors.secondaryText
                                   : AppColors.lightSecondaryText,
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: AppDimensions.spacingXxxl),
                           CustomInput(
                             label: 'Full Name',
                             hint: 'John Doe',
@@ -89,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppDimensions.spacingLg),
                           CustomInput(
                             label: 'Email Address',
                             hint: 'name@example.com',
@@ -111,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppDimensions.spacingLg),
                           CustomInput(
                             label: 'Password',
                             hint: '••••••••',
@@ -140,13 +141,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Password is required';
                               }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
+                              if (value.length < AppDimensions.passwordMinLength) {
+                                return 'Password must be at least ${AppDimensions.passwordMinLength} characters';
                               }
                               return null;
                             },
                           ),
-                          const SizedBox(height: 200),
+                          const SizedBox(height: AppDimensions.formContentSpacing),
                         ],
                       ),
                     ),
@@ -155,18 +156,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.0),
-                          Theme.of(context).scaffoldBackgroundColor,
-                        ],
-                        stops: const [0.0, 0.3],
+                     padding: const EdgeInsets.all(AppDimensions.spacingXl),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Theme.of(context).scaffoldBackgroundColor.withValues(alpha: AppDimensions.opacityXxs),
+                            Theme.of(context).scaffoldBackgroundColor,
+                          ],
+                          stops: const [0.0, 0.3],
+                        ),
                       ),
-                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -177,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: isDark
                                   ? AppColors.secondaryText
                                   : AppColors.lightSecondaryText,
-                              fontSize: 12,
+                              fontSize: AppDimensions.fontSizeSm,
                             ),
                             children: [
                               TextSpan(
@@ -197,13 +198,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 20),
+                         const SizedBox(height: AppDimensions.spacingLg),
                         CustomButton(
                           text: 'Create Account',
                           onPressed: _handleRegister,
                           isLoading: _authViewModel.isLoading,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppDimensions.spacingXl),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -227,7 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                         const SizedBox(height: AppDimensions.spacingSm),
                       ],
                     ),
                   ),
@@ -251,7 +252,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) return;
 
       if (success) {
-        Navigator.pop(context, true); // Return true for success
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          Navigator.pop(context, true);
+        });
       } else {
         CustomToast.showError(
           context,

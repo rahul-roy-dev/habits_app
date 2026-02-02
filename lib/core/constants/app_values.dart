@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AppValues {
   AppValues._();
 
@@ -7,7 +9,7 @@ class AppValues {
 
   // Default Values
   static const int defaultHabitColor = 0xFFA78BFA;
-  static const String defaultHabitIcon = 'check';
+  static const String defaultHabitIcon = 'water';
   static const String defaultHabitDescription = '';
 
   // Box Names
@@ -37,17 +39,18 @@ class AppValues {
     0xFF06B6D4,
   ];
 
-  // Habit Icons
-  static const List<String> habitIcons = [
-    'workout',
-    'water',
-    'book',
-    'meditation',
-    'food',
-    'sleep',
-    'code',
-    'other',
-  ];
+  // Habit Icons Map
+  static const Map<String, IconData> habitIconMap = {
+    'workout': Icons.fitness_center,
+    'water': Icons.local_drink,
+    'book': Icons.menu_book,
+    'meditation': Icons.self_improvement,
+    'food': Icons.restaurant,
+    'sleep': Icons.nightlight_round,
+    'code': Icons.code,
+    'other': Icons.more_horiz,
+  };
+
 
   // Frequency Options
   static const String frequencyDaily = 'Daily';

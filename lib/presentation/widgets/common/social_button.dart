@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -25,14 +26,14 @@ class SocialButton extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: AppDimensions.buttonHeight,
       child: OutlinedButton.icon(
         onPressed: onPressed,
         icon: iconPath != null
             ? SvgPicture.asset(
                 iconPath!,
-                width: 24,
-                height: 24,
+                width: AppDimensions.socialIconSize,
+                height: AppDimensions.socialIconSize,
                 colorFilter: iconColor != null
                     ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
                     : null,
@@ -48,7 +49,7 @@ class SocialButton extends StatelessWidget {
           text,
           style: TextStyle(
             color: isDark ? AppColors.primaryText : AppColors.lightPrimaryText,
-            fontSize: 16,
+            fontSize: AppDimensions.fontSizeXl,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -57,13 +58,13 @@ class SocialButton extends StatelessWidget {
             color: isDark ? AppColors.transparent : AppColors.transparent,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
           backgroundColor: isDark
               ? AppColors.surface
               : AppColors.white,
-          elevation: isDark ? 0 : 2,
-          shadowColor: Colors.black.withValues(alpha: 0.05),
+          elevation: isDark ? AppDimensions.elevationNone : AppDimensions.elevationSm,
+          shadowColor: Colors.black.withValues(alpha: AppDimensions.opacityXxs),
         ),
       ),
     );

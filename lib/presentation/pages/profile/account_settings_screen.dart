@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/routes/app_routes.dart';
 import 'package:habits_app/core/di/service_locator.dart';
 import 'package:habits_app/presentation/viewmodels/auth_viewmodel.dart';
@@ -21,7 +22,7 @@ class AccountSettingsScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
+           padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
           child: CustomIconButton(
             icon: LucideIcons.chevronLeft,
             onPressed: () => Navigator.pop(context),
@@ -37,8 +38,8 @@ class AccountSettingsScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+       body: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spacingXl),
         child: Column(
           children: [
             ProfileMenuItem(
@@ -50,18 +51,18 @@ class AccountSettingsScreen extends StatelessWidget {
                   color: isDark
                       ? AppColors.secondaryText
                       : AppColors.lightSecondaryText,
-                  fontSize: 14,
+                   fontSize: AppDimensions.fontSizeLg,
                 ),
               ),
               onTap: null,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimensions.spacingSm),
             ProfileMenuItem(
               icon: Icons.lock_outline,
               title: 'Update Password',
               onTap: () {},
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimensions.spacingSm),
             ProfileMenuItem(
               icon: LucideIcons.globe,
               title: 'Connect with Google',
@@ -70,7 +71,7 @@ class AccountSettingsScreen extends StatelessWidget {
             const Spacer(),
             SizedBox(
               width: double.infinity,
-              height: 56,
+               height: AppDimensions.buttonHeight,
               child: OutlinedButton(
                 onPressed: () async {
                   await authViewModel.logout();
@@ -85,20 +86,20 @@ class AccountSettingsScreen extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.error),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
                   ),
                 ),
                 child: const Text(
                   'Logout',
                   style: TextStyle(
                     color: AppColors.error,
-                    fontSize: 16,
+                     fontSize: AppDimensions.fontSizeXl,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+             const SizedBox(height: AppDimensions.spacingXxxl),
           ],
         ),
       ),

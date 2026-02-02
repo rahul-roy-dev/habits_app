@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class BaseDialog extends StatelessWidget {
   final String title;
@@ -27,7 +28,7 @@ class BaseDialog extends StatelessWidget {
   }) async {
     final result = await showDialog<bool>(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: Colors.black.withValues(alpha: AppDimensions.opacityHalf),
       builder: (context) => BaseDialog(
         title: title,
         message: message,
@@ -45,18 +46,18 @@ class BaseDialog extends StatelessWidget {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+      elevation: AppDimensions.elevationNone,
+      insetPadding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingXxxl),
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppDimensions.spacingXl),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surface : AppColors.lightSurface,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppDimensions.spacingXl),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              color: Colors.black.withValues(alpha: AppDimensions.opacitySm),
+              blurRadius: AppDimensions.spacingLg,
+              offset: const Offset(0, AppDimensions.tabVerticalPadding),
             ),
           ],
         ),
@@ -67,41 +68,41 @@ class BaseDialog extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: AppDimensions.fontSizeXxxl,
                 fontWeight: FontWeight.bold,
                 color: isDark
                     ? AppColors.primaryText
                     : AppColors.lightPrimaryText,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimensions.spacingSm),
             Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppDimensions.fontSizeXl,
                 color: isDark
                     ? AppColors.secondaryText
                     : AppColors.lightSecondaryText,
-                height: 1.5,
+                height: AppDimensions.lineHeight,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppDimensions.fontSizeMassive),
             Row(
               children: [
                 Expanded(
                   child: TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: AppDimensions.spacingMd),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppDimensions.fontSizeLg),
                       ),
                     ),
                     child: Text(
                       cancelText,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: AppDimensions.fontSizeXl,
                         fontWeight: FontWeight.w600,
                         color: isDark
                             ? AppColors.secondaryText
@@ -110,7 +111,7 @@ class BaseDialog extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppDimensions.spacingSm),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(true),
@@ -119,16 +120,16 @@ class BaseDialog extends StatelessWidget {
                           ? AppColors.error
                           : AppColors.primaryAccent,
                       foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: AppDimensions.elevationNone,
+                      padding: const EdgeInsets.symmetric(vertical: AppDimensions.spacingMd),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppDimensions.fontSizeLg),
                       ),
                     ),
                     child: Text(
                       confirmText,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: AppDimensions.fontSizeXl,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

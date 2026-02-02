@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class CustomIconButton extends StatelessWidget {
   final IconData icon;
@@ -12,7 +13,7 @@ class CustomIconButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     this.isActive = false,
-    this.size = 24,
+    this.size = AppDimensions.iconSizeSm,
   });
 
   @override
@@ -21,11 +22,11 @@ class CustomIconButton extends StatelessWidget {
       onTap: onPressed,
       borderRadius: BorderRadius.circular(size),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(AppDimensions.spacingXs),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: isActive
-              ? AppColors.primaryAccent.withValues(alpha: 0.2)
+              ? AppColors.primaryAccent.withValues(alpha: AppDimensions.opacitySm)
               : Colors.transparent,
         ),
         child: Icon(

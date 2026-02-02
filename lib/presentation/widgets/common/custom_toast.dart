@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class CustomToast {
   static OverlayEntry? _currentOverlay;
@@ -65,9 +66,9 @@ class _ToastWidgetState extends State<_ToastWidget>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: AppDimensions.animationDurationMs),
     );
 
     _scaleAnimation = CurvedAnimation(
@@ -82,7 +83,7 @@ class _ToastWidgetState extends State<_ToastWidget>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: AppDimensions.toastDurationSeconds), () {
       if (mounted) {
         _controller.reverse().then((_) => widget.onDismiss());
       }
@@ -101,7 +102,7 @@ class _ToastWidgetState extends State<_ToastWidget>
       child: Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: const EdgeInsets.only(top: 60.0),
+          padding: const EdgeInsets.only(top: AppDimensions.toastTopPadding),
           child: ScaleTransition(
             scale: _scaleAnimation,
             child: FadeTransition(
@@ -109,34 +110,34 @@ class _ToastWidgetState extends State<_ToastWidget>
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                   padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.toastHorizontalPadding,
+                      vertical: AppDimensions.toastVerticalPadding,
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: AppDimensions.toastHorizontalMargin),
                   decoration: BoxDecoration(
                     color: widget.backgroundColor,
-                    borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
+                        color: Colors.black.withValues(alpha: AppDimensions.opacitySm),
+                        blurRadius: AppDimensions.shadowBlurMd,
+                        offset: const Offset(0, AppDimensions.shadowOffsetYLarge),
                       ),
                     ],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(widget.icon, color: Colors.white, size: 22),
-                      const SizedBox(width: 12),
+                       Icon(widget.icon, color: Colors.white, size: AppDimensions.toastIconSize),
+                      const SizedBox(width: AppDimensions.toastIconSpacing),
                       Flexible(
                         child: Text(
                           widget.message,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                            fontSize: AppDimensions.fontSizeLg,
                           ),
                         ),
                       ),

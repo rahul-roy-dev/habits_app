@@ -36,21 +36,17 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.habit?.title ?? '');
-    _selectedIcon = widget.habit?.icon ?? 'water';
+    _selectedIcon = widget.habit?.icon ?? AppValues.defaultHabitIcon;
     _selectedColor = widget.habit?.color ?? AppValues.defaultHabitColor;
     _frequency = widget.habit?.description.split(' ').first ?? AppValues.defaultFrequency;
   }
 
-  final List<Map<String, dynamic>> _icons = [
-    {'name': 'workout', 'icon': Icons.fitness_center},
-    {'name': 'water', 'icon': Icons.local_drink},
-    {'name': 'book', 'icon': Icons.menu_book},
-    {'name': 'meditation', 'icon': Icons.self_improvement},
-    {'name': 'food', 'icon': Icons.restaurant},
-    {'name': 'sleep', 'icon': Icons.nightlight_round},
-    {'name': 'code', 'icon': Icons.code},
-    {'name': 'other', 'icon': Icons.more_horiz},
-  ];
+  List<Map<String, dynamic>> get _icons => AppValues.habitIconMap.entries
+      .map((entry) => {
+            'name': entry.key,
+            'icon': entry.value,
+          })
+      .toList();
 
   @override
   void dispose() {

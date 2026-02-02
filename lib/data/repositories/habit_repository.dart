@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habits_app/data/models/habit_model.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
-import 'package:habits_app/domain/repositories/i_habit_repository.dart';
+import 'package:habits_app/domain/repositories/habit/i_habit_repository.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 
 class HabitRepository implements IHabitRepository {
@@ -42,17 +42,31 @@ class HabitRepository implements IHabitRepository {
     );
   }
 
-  @override
-  Future<void> addHabit(HabitEntity habit) async {
-    await _box.add(_toModel(habit));
-  }
-
+  // ========== IHabitReader Implementation ==========
+  
   @override
   List<HabitEntity> getHabitsForUser(String userId) {
     return _box.values
         .where((habit) => habit.userId == userId)
         .map((model) => _toEntity(model))
         .toList();
+  }
+
+  @override
+  HabitEntity? getHabitById(String habitId) {
+    try {
+      final model = _box.values.firstWhere((m) => m.id == habitId);
+      return _toEntity(model);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ========== IHabitWriter Implementation ==========
+
+  @override
+  Future<void> addHabit(HabitEntity habit) async {
+    await _box.add(_toModel(habit));
   }
 
   @override
@@ -67,18 +81,15 @@ class HabitRepository implements IHabitRepository {
     await model.delete();
   }
 
+  // ========== IHabitCompletion Implementation ==========
+
   @override
   Future<void> toggleHabitCompletion(HabitEntity habit, DateTime date) async {
     final model = _box.values.firstWhere((m) => m.id == habit.id);
     final List<DateTime> newCompletionDates = List.from(model.completionDates);
     final normalizedDate = DateTime(date.year, date.month, date.day);
 
-    bool alreadyCompleted = newCompletionDates.any(
-      (d) =>
-          d.year == normalizedDate.year &&
-          d.month == normalizedDate.month &&
-          d.day == normalizedDate.day,
-    );
+    bool alreadyCompleted = isCompletedOnDate(habit, date);
 
     if (alreadyCompleted) {
       newCompletionDates.removeWhere(
@@ -97,5 +108,16 @@ class HabitRepository implements IHabitRepository {
     );
 
     await _box.put(model.key, updatedModel);
+  }
+
+  @override
+  bool isCompletedOnDate(HabitEntity habit, DateTime date) {
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    return habit.completionDates.any(
+      (d) =>
+          d.year == normalizedDate.year &&
+          d.month == normalizedDate.month &&
+          d.day == normalizedDate.day,
+    );
   }
 }

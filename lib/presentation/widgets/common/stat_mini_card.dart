@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 
 class StatMiniCard extends StatelessWidget {
@@ -18,7 +19,7 @@ class StatMiniCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomCard(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppDimensions.spacingMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,11 +29,11 @@ class StatMiniCard extends StatelessWidget {
               color: isDark
                   ? AppColors.secondaryText
                   : AppColors.lightSecondaryText,
-              fontSize: 10,
+               fontSize: AppDimensions.fontSizeXxs,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimensions.spacingXs),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -42,34 +43,34 @@ class StatMiniCard extends StatelessWidget {
                   color: isDark
                       ? AppColors.primaryText
                       : AppColors.lightPrimaryText,
-                  fontSize: 28,
+                   fontSize: AppDimensions.fontSizeHuge,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               if (isPercentage)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 6, left: 2),
+                  padding: const EdgeInsets.only(bottom: AppDimensions.toggleVerticalPadding, left: AppDimensions.borderWidthMedium),
                   child: Text(
                     '%',
                     style: TextStyle(
                       color: isDark
                           ? AppColors.primaryAccent
                           : AppColors.lightPrimaryAccent,
-                      fontSize: 16,
+                      fontSize: AppDimensions.fontSizeXl,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               if (value.contains('Days'))
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 6, left: 4),
+                  padding: const EdgeInsets.only(bottom: AppDimensions.toggleVerticalPadding, left: AppDimensions.spacingXxs),
                   child: Text(
                     'Days',
                     style: TextStyle(
                       color: isDark
                           ? AppColors.secondaryText
                           : AppColors.lightSecondaryText,
-                      fontSize: 12,
+                      fontSize: AppDimensions.fontSizeSm,
                     ),
                   ),
                 ),

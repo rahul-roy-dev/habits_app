@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class HeaderIcon extends StatelessWidget {
   final IconData icon;
@@ -13,12 +14,12 @@ class HeaderIcon extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(AppDimensions.spacingXs),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surface : AppColors.lightSurface,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppDimensions.tabVerticalPadding),
         ),
-        child: Icon(icon, color: AppColors.primaryAccent, size: 20),
+        child: Icon(icon, color: AppColors.primaryAccent, size: AppDimensions.spacingLg),
       ),
     );
   }

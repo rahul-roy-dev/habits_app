@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class CustomTab extends StatelessWidget {
   final String text;
@@ -18,10 +19,10 @@ class CustomTab extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: AppDimensions.tabHorizontalPadding, vertical: AppDimensions.tabVerticalPadding),
         decoration: BoxDecoration(
           color: isActive ? AppColors.primaryAccent : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
         ),
         child: Text(
           text,

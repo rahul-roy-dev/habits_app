@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 
 class CustomFloatingButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -17,8 +18,8 @@ class CustomFloatingButton extends StatelessWidget {
       onPressed: onPressed,
       backgroundColor: AppColors.primaryAccent,
       foregroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Icon(icon, size: 28),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+      child: Icon(icon, size: AppDimensions.iconSizeFab),
     );
   }
 }

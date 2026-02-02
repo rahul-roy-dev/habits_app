@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 
 class ProfileMenuItem extends StatelessWidget {
@@ -23,10 +24,10 @@ class ProfileMenuItem extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
         child: Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          height: AppDimensions.menuItemHeight,
+          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingMd),
           child: Row(
             children: [
               Icon(
@@ -35,14 +36,14 @@ class ProfileMenuItem extends StatelessWidget {
                     ? AppColors.primaryAccent
                     : AppColors.lightPrimaryAccent,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppDimensions.spacingMd),
               Text(
                 title,
                 style: TextStyle(
                   color: isDark
                       ? AppColors.primaryText
                       : AppColors.lightPrimaryText,
-                  fontSize: 16,
+                  fontSize: AppDimensions.fontSizeXl,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -54,7 +55,7 @@ class ProfileMenuItem extends StatelessWidget {
                           color: isDark
                               ? AppColors.secondaryText
                               : AppColors.lightSecondaryText,
-                          size: 16,
+                          size: AppDimensions.fontSizeXl,
                         )
                       : const SizedBox.shrink()),
             ],

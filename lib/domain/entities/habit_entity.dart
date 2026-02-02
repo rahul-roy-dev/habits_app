@@ -1,3 +1,5 @@
+import 'package:habits_app/core/constants/app_values.dart';
+
 class HabitEntity {
   final String id;
   final String title;
@@ -12,11 +14,11 @@ class HabitEntity {
   const HabitEntity({
     required this.id,
     required this.title,
-    this.description = '',
+    this.description = AppValues.defaultHabitDescription,
     this.isCompleted = false,
     required this.createdAt,
-    this.icon = 'check',
-    this.color = 0xFFA78BFA,
+    this.icon = AppValues.defaultHabitIcon,
+    this.color = AppValues.defaultHabitColor,
     this.completionDates = const [],
     required this.userId,
   });

@@ -33,6 +33,7 @@ class AppDimensions {
   // Icon Sizes
   static const double iconSizeSm = 24.0;
   static const double iconSizeMd = 26.0;
+  static const double iconSizeFab = 28.0;
   static const double iconSizeLg = 32.0;
   static const double iconSizeXl = 35.0;
   static const double iconSizeXxl = 40.0;
@@ -43,6 +44,7 @@ class AppDimensions {
   // Avatar Sizes
   static const double avatarSizeSm = 38.0;
   static const double avatarSizeMd = 40.0;
+  static const double avatarSizeDefault = 48.0;
   static const double avatarSizeLg = 56.0;
 
   // Card/Container Sizes
@@ -113,6 +115,56 @@ class AppDimensions {
   // Bottom Padding for Scroll
   static const double bottomScrollPadding = 120.0;
 
+  // Toast
+  static const double toastTopPadding = 60.0;
+  static const double toastHorizontalPadding = 20.0;
+  static const double toastVerticalPadding = 12.0;
+  static const double toastHorizontalMargin = 32.0;
+  static const double toastIconSize = 22.0;
+  static const double toastIconSpacing = 12.0;
+
   // Password Minimum Length
   static const int passwordMinLength = 6;
+
+  // Statistics Screen
+  static const double heatmapContainerRadius = 8.0;
+  static const double chartBarWidth = 20.0;
+  static const double chartBarRadius = 6.0;
+  static const double chartHeight = 150.0;
+
+  // Streak Card
+  static const double streakCardWidth = 140.0;
+  static const double streakProgressSize = 60.0;
+  static const double streakProgressStrokeWidth = 4.0;
+  static const double fontSizeStreakTitle = 8.0;
+
+  // Profile Avatar
+  static const double avatarSizeXl = 100.0;
+
+  // Tab/Toggle Item
+  static const double tabHorizontalPadding = 20.0;
+  static const double tabVerticalPadding = 10.0;
+  static const double toggleHorizontalPadding = 12.0;
+  static const double toggleVerticalPadding = 6.0;
+  static const double toggleRadius = 6.0;
+
+  // Profile Menu
+  static const double menuItemHeight = 60.0;
+
+  // Social Button
+  static const double socialIconSize = 24.0;
+
+  // Toast Duration
+  static const int toastDurationSeconds = 3;
+
+  // Opacity
+  static const double opacityHalf = 0.5;
+  static const double opacityHigh = 0.8;
+
+  // Elevation
+  static const double elevationNone = 0.0;
+  static const double elevationSm = 2.0;
+
+  // Form Padding
+  static const double formContentSpacing = 200.0;
 }
