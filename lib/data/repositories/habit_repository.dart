@@ -1,4 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:habits_app/data/models/habit_model.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_repository.dart';

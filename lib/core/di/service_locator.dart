@@ -26,11 +26,6 @@ import 'package:habits_app/domain/usecases/habit/delete_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/toggle_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/get_habit_stats_usecase.dart';
 
-// ViewModels
-import 'package:habits_app/presentation/viewmodels/auth_viewmodel.dart';
-import 'package:habits_app/presentation/viewmodels/habit_viewmodel.dart';
-import 'package:habits_app/presentation/viewmodels/theme_viewmodel.dart';
-
 final GetIt sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
@@ -90,29 +85,4 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<GetHabitStatsUseCase>(
     () => GetHabitStatsUseCase(sl<IHabitReader>()),
   );
-
-  // ========== ViewModels (Presentation Layer) ==========
-  
-  sl.registerLazySingleton<AuthViewModel>(
-    () => AuthViewModel(
-      loginUseCase: sl<LoginUseCase>(),
-      logoutUseCase: sl<LogoutUseCase>(),
-      registerUseCase: sl<RegisterUseCase>(),
-      getCurrentUserUseCase: sl<GetCurrentUserUseCase>(),
-      userManager: sl<IUserManager>(),
-    ),
-  );
-
-  sl.registerLazySingleton<HabitViewModel>(
-    () => HabitViewModel(
-      getHabitsUseCase: sl<GetHabitsUseCase>(),
-      addHabitUseCase: sl<AddHabitUseCase>(),
-      updateHabitUseCase: sl<UpdateHabitUseCase>(),
-      deleteHabitUseCase: sl<DeleteHabitUseCase>(),
-      toggleHabitUseCase: sl<ToggleHabitUseCase>(),
-      getHabitStatsUseCase: sl<GetHabitStatsUseCase>(),
-    ),
-  );
-
-  sl.registerLazySingleton<ThemeViewModel>(() => ThemeViewModel());
 }

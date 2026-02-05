@@ -11,6 +11,7 @@ class CustomInput extends StatelessWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final TextInputType keyboardType;
+  final void Function(String)? onChanged;
 
   const CustomInput({
     super.key,
@@ -22,6 +23,7 @@ class CustomInput extends StatelessWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.keyboardType = TextInputType.text,
+    this.onChanged,
   });
 
   @override
@@ -45,6 +47,7 @@ class CustomInput extends StatelessWidget {
           obscureText: isPassword,
           validator: validator,
           keyboardType: keyboardType,
+          onChanged: onChanged,
           style: TextStyle(
             color: isDark ? AppColors.primaryText : AppColors.lightPrimaryText,
           ),

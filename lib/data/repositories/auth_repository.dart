@@ -1,4 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:habits_app/data/models/user_model.dart';
 import 'package:habits_app/domain/entities/user_entity.dart';
 import 'package:habits_app/domain/repositories/auth/i_auth_repository.dart';

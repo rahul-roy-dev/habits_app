@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 
 part 'user_model.g.dart';

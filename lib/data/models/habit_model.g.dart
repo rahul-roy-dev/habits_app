@@ -8,7 +8,7 @@ part of 'habit_model.dart';
 
 class HabitModelAdapter extends TypeAdapter<HabitModel> {
   @override
-  final int typeId = 1;
+  final typeId = 1;
 
   @override
   HabitModel read(BinaryReader reader) {
@@ -19,12 +19,20 @@ class HabitModelAdapter extends TypeAdapter<HabitModel> {
     return HabitModel(
       id: fields[0] as String,
       title: fields[1] as String,
-      description: fields[2] as String,
-      isCompleted: fields[3] as bool,
+      description: fields[2] == null
+          ? AppValues.defaultHabitDescription
+          : fields[2] as String,
+      isCompleted: fields[3] == null ? false : fields[3] as bool,
       createdAt: fields[4] as DateTime,
-      icon: fields[5] as String,
-      color: fields[6] as int,
-      completionDates: (fields[7] as List).cast<DateTime>(),
+      icon: fields[5] == null
+          ? AppValues.defaultHabitIcon
+          : fields[5] as String,
+      color: fields[6] == null
+          ? AppValues.defaultHabitColor
+          : (fields[6] as num).toInt(),
+      completionDates: fields[7] == null
+          ? const []
+          : (fields[7] as List).cast<DateTime>(),
       userId: fields[8] as String,
     );
   }

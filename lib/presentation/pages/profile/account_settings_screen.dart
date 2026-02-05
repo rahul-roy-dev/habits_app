@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/routes/app_routes.dart';
-import 'package:habits_app/core/di/service_locator.dart';
-import 'package:habits_app/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/widgets/common/profile_menu_item.dart';
 import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class AccountSettingsScreen extends StatelessWidget {
+class AccountSettingsScreen extends ConsumerWidget {
   const AccountSettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authViewModel = sl<AuthViewModel>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.currentUser;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final user = authViewModel.currentUser;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,7 +74,7 @@ class AccountSettingsScreen extends StatelessWidget {
                height: AppDimensions.buttonHeight,
               child: OutlinedButton(
                 onPressed: () async {
-                  await authViewModel.logout();
+                  await ref.read(authProvider.notifier).logout();
                   if (context.mounted) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,

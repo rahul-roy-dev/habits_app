@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/presentation/routes/app_routes.dart';
@@ -8,9 +9,8 @@ import 'package:habits_app/presentation/widgets/common/placeholder_view.dart';
 import 'package:habits_app/presentation/widgets/common/header_icon.dart';
 import 'package:habits_app/presentation/widgets/common/date_item.dart';
 import 'package:habits_app/presentation/widgets/common/claim_button.dart';
-import 'package:habits_app/core/di/service_locator.dart';
-import 'package:habits_app/presentation/viewmodels/habit_viewmodel.dart';
-import 'package:habits_app/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:habits_app/presentation/providers/habit_provider.dart';
+import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/pages/statistics/statistics_screen.dart';
 import 'package:habits_app/presentation/pages/profile/profile_screen.dart';
 import 'package:habits_app/presentation/widgets/common/base_dialog.dart';
@@ -19,18 +19,16 @@ import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final _habitViewModel = sl<HabitViewModel>();
-  final _authViewModel = sl<AuthViewModel>();
 
   @override
   void initState() {
@@ -40,10 +38,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _initData() async {
-    await _authViewModel.checkAuthStatus();
-    if (_authViewModel.isAuthenticated) {
-      _habitViewModel.loadHabits(_authViewModel.currentUser!.id);
-    }
+    await ref.read(authProvider.notifier).checkAuthStatus();
   }
 
   @override
@@ -88,8 +83,6 @@ class _HomeScreenState extends State<HomeScreen>
           physics: const BouncingScrollPhysics(),
           children: [
             _DashboardTab(
-              habitViewModel: _habitViewModel,
-              authViewModel: _authViewModel,
               controller: controller,
             ),
             StatisticsScreen(scrollController: controller),
@@ -147,13 +140,7 @@ class _HomeScreenState extends State<HomeScreen>
               top: AppDimensions.fabOffset,
               child: GestureDetector(
                 onTap: () =>
-                    Navigator.pushNamed(context, AppRoutes.addHabit).then((_) {
-                      if (_authViewModel.isAuthenticated) {
-                        _habitViewModel.loadHabits(
-                          _authViewModel.currentUser!.id,
-                        );
-                      }
-                    }),
+                    Navigator.pushNamed(context, AppRoutes.addHabit),
                 child: Container(
                   width: AppDimensions.fabSize,
                   height: AppDimensions.fabSize,
@@ -180,101 +167,89 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-class _DashboardTab extends StatelessWidget {
-  final HabitViewModel habitViewModel;
-  final AuthViewModel authViewModel;
+class _DashboardTab extends ConsumerWidget {
   final ScrollController? controller;
 
   const _DashboardTab({
-    required this.habitViewModel,
-    required this.authViewModel,
     this.controller,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: habitViewModel,
-      builder: (context, child) {
-        return Column(
-          children: [
-            _buildHeader(context),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: controller,
-                padding: const EdgeInsets.all(AppDimensions.spacingLg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDateStrip(context),
-                    SizedBox(height: AppDimensions.spacingXxl),
-                    _buildProgressCard(context),
-                    SizedBox(height: AppDimensions.spacingXxl),
-                    _buildHabitListHeader(context),
-                    SizedBox(height: AppDimensions.spacingXs),
-                    _buildHabitList(context),
-                    SizedBox(height: AppDimensions.bottomScrollPadding),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return ListenableBuilder(
-      listenable: authViewModel,
-      builder: (context, child) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final user = authViewModel.currentUser;
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg, vertical: AppDimensions.spacingSm),
-          child: SafeArea(
-            bottom: false,
-            child: Row(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        _buildHeader(context, ref),
+        Expanded(
+          child: SingleChildScrollView(
+            controller: controller,
+            padding: const EdgeInsets.all(AppDimensions.spacingLg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAvatar(
-                  initials: user?.name.substring(0, 1) ?? AppStrings.defaultUserInitial,
-                  size: AppDimensions.avatarSizeMd,
-                ),
-                SizedBox(width: AppDimensions.spacingSm),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppStrings.goodMorning,
-                      style: TextStyle(
-                        color: isDark
-                            ? AppColors.secondaryText
-                            : AppColors.lightSecondaryText,
-                        fontSize: AppDimensions.fontSizeXxs,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      user?.name ?? AppStrings.defaultUserName,
-                      style: TextStyle(
-                        color: isDark
-                            ? AppColors.primaryText
-                            : AppColors.lightPrimaryText,
-                        fontSize: AppDimensions.fontSizeXxl,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                HeaderIcon(icon: Icons.bar_chart_outlined, onTap: () {}),
-                SizedBox(width: AppDimensions.spacingSm),
-                const HeaderIcon(icon: Icons.notifications_none),
+                _buildDateStrip(context),
+                SizedBox(height: AppDimensions.spacingXxl),
+                _buildProgressCard(context, ref),
+                SizedBox(height: AppDimensions.spacingXxl),
+                _buildHabitListHeader(context),
+                SizedBox(height: AppDimensions.spacingXs),
+                _buildHabitList(context, ref),
+                SizedBox(height: AppDimensions.bottomScrollPadding),
               ],
             ),
           ),
-        );
-      },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg, vertical: AppDimensions.spacingSm),
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          children: [
+            CustomAvatar(
+              initials: user?.name.substring(0, 1) ?? AppStrings.defaultUserInitial,
+              size: AppDimensions.avatarSizeMd,
+            ),
+            SizedBox(width: AppDimensions.spacingSm),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.goodMorning,
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.secondaryText
+                        : AppColors.lightSecondaryText,
+                    fontSize: AppDimensions.fontSizeXxs,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  user?.name ?? AppStrings.defaultUserName,
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.primaryText
+                        : AppColors.lightPrimaryText,
+                    fontSize: AppDimensions.fontSizeXxl,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            HeaderIcon(icon: Icons.bar_chart_outlined, onTap: () {}),
+            SizedBox(width: AppDimensions.spacingSm),
+            const HeaderIcon(icon: Icons.notifications_none),
+          ],
+        ),
+      ),
     );
   }
 
@@ -326,11 +301,13 @@ class _DashboardTab extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressCard(BuildContext context) {
+  Widget _buildProgressCard(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final progress = habitViewModel.getCompletionProgress(DateTime.now());
-    final total = habitViewModel.totalHabits;
-    final completed = habitViewModel.getCompletedCount(DateTime.now());
+    final now = DateTime.now();
+    
+    final progress = ref.watch(habitCompletionProgressProvider(now));
+    final total = ref.watch(totalHabitsProvider);
+    final completed = ref.watch(completedHabitsCountProvider(now));
 
     return CustomCard(
       padding: const EdgeInsets.all(AppDimensions.spacingLg),
@@ -444,9 +421,11 @@ class _DashboardTab extends StatelessWidget {
     );
   }
 
-  Widget _buildHabitList(BuildContext context) {
+  Widget _buildHabitList(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final habits = habitViewModel.habits;
+    final habitState = ref.watch(habitProvider);
+    final habits = habitState.habits;
+
     if (habits.isEmpty) {
       return Center(
         child: Padding(
@@ -471,12 +450,12 @@ class _DashboardTab extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.spacingSm),
       itemBuilder: (context, index) {
         final habit = habits[index];
-        final isCompleted = habit.completionDates.any(
-          (d) =>
-              d.year == DateTime.now().year &&
-              d.month == DateTime.now().month &&
-              d.day == DateTime.now().day,
-        );
+        final isCompleted = ref.watch(
+            isHabitCompletedProvider(
+              habit: habit,
+              date: DateTime.now(),
+            ),
+          );
 
         return ClipRRect(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -494,7 +473,7 @@ class _DashboardTab extends StatelessWidget {
               );
             },
             onDismissed: (direction) {
-              habitViewModel.deleteHabit(habit);
+              ref.read(habitProvider.notifier).deleteHabit(habit);
             },
             background: Container(
               alignment: Alignment.centerRight,
@@ -508,11 +487,7 @@ class _DashboardTab extends StatelessWidget {
                     context,
                     AppRoutes.addHabit,
                     arguments: habit,
-                  ).then((_) {
-                    if (authViewModel.isAuthenticated) {
-                      habitViewModel.loadHabits(authViewModel.currentUser!.id);
-                    }
-                  }),
+                  ),
               child: CustomCard(
                 borderRadius: 0,
                 padding: const EdgeInsets.symmetric(
@@ -577,7 +552,7 @@ class _DashboardTab extends StatelessWidget {
                         size: AppDimensions.iconSizeLg,
                       ),
                       onPressed: () =>
-                          habitViewModel.toggleHabit(habit, DateTime.now()),
+                          ref.read(habitProvider.notifier).toggleHabit(habit, DateTime.now()),
                     ),
                   ],
                 ),

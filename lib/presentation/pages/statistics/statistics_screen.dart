@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
-import 'package:habits_app/core/di/service_locator.dart';
-import 'package:habits_app/presentation/viewmodels/habit_viewmodel.dart';
 import 'package:habits_app/presentation/widgets/common/stat_mini_card.dart';
 import 'package:habits_app/presentation/widgets/common/streak_card.dart';
 import 'package:habits_app/presentation/widgets/common/toggle_item.dart';
-import 'package:habits_app/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:habits_app/presentation/providers/auth_provider.dart';
 
-class StatisticsScreen extends StatefulWidget {
+class StatisticsScreen extends ConsumerStatefulWidget {
   final ScrollController? scrollController;
   const StatisticsScreen({super.key, this.scrollController});
 
   @override
-  State<StatisticsScreen> createState() => _StatisticsScreenState();
+  ConsumerState<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _StatisticsScreenState extends State<StatisticsScreen> {
-  final _habitViewModel = sl<HabitViewModel>();
-  final _authViewModel = sl<AuthViewModel>();
+class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 
   @override
   void initState() {
@@ -29,10 +26,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> _initData() async {
-    await _authViewModel.checkAuthStatus();
-    if (_authViewModel.isAuthenticated) {
-      _habitViewModel.loadHabits(_authViewModel.currentUser!.id);
-    }
+    await ref.read(authProvider.notifier).checkAuthStatus();
+    // derived providers in HabitProvider will automatically update when AuthState changes
   }
 
   @override

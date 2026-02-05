@@ -1,4 +1,3 @@
-import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_reader.dart';
 
 /// Use case for calculating habit statistics

@@ -1,44 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/presentation/widgets/common/custom_button.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 import 'package:habits_app/presentation/widgets/common/custom_input.dart';
 import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
-import 'package:habits_app/core/di/service_locator.dart';
-import 'package:habits_app/presentation/viewmodels/habit_viewmodel.dart';
 import 'package:habits_app/presentation/widgets/common/frequency_toggle.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:habits_app/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:habits_app/presentation/providers/habit_provider.dart';
+import 'package:habits_app/presentation/providers/auth_provider.dart';
+import 'package:habits_app/presentation/providers/habit_form_provider.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
 
-class AddHabitScreen extends StatefulWidget {
+class AddHabitScreen extends ConsumerStatefulWidget {
   final HabitEntity? habit;
   const AddHabitScreen({super.key, this.habit});
 
   @override
-  State<AddHabitScreen> createState() => _AddHabitScreenState();
+  ConsumerState<AddHabitScreen> createState() => _AddHabitScreenState();
 }
 
-class _AddHabitScreenState extends State<AddHabitScreen> {
+class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   late final TextEditingController _nameController;
-  final _habitViewModel = sl<HabitViewModel>();
-  final _authViewModel = sl<AuthViewModel>();
-  late String _selectedIcon;
-  late int _selectedColor;
-  late String _frequency;
-  final List<String> _selectedDays = AppValues.defaultSelectedDays;
-  bool _remindersEnabled = true;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.habit?.title ?? '');
-    _selectedIcon = widget.habit?.icon ?? AppValues.defaultHabitIcon;
-    _selectedColor = widget.habit?.color ?? AppValues.defaultHabitColor;
-    _frequency = widget.habit?.description.split(' ').first ?? AppValues.defaultFrequency;
   }
 
   List<Map<String, dynamic>> get _icons => AppValues.habitIconMap.entries
@@ -55,23 +46,24 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   }
 
   void _handleSave() async {
+    final formState = ref.read(habitFormProvider(widget.habit));
     if (_nameController.text.isNotEmpty) {
       if (widget.habit != null) {
         final updatedHabit = widget.habit!.copyWith(
           title: _nameController.text.trim(),
-          description: '$_frequency habit',
-          icon: _selectedIcon,
-          color: _selectedColor,
+          description: '${formState.frequency} habit',
+          icon: formState.icon,
+          color: formState.color,
         );
-        await _habitViewModel.updateHabit(widget.habit!.id, updatedHabit);
+        await ref.read(habitProvider.notifier).updateHabit(widget.habit!.id, updatedHabit);
       } else {
-        if (_authViewModel.isAuthenticated) {
-          await _habitViewModel.addHabit(
+        final authState = ref.read(authProvider);
+        if (authState.isAuthenticated) {
+          await ref.read(habitProvider.notifier).addHabit(
             _nameController.text.trim(),
-            '$_frequency habit',
-            _selectedIcon,
-            _selectedColor,
-            _authViewModel.currentUser!.id,
+            '${formState.frequency} habit',
+            formState.icon,
+            formState.color,
           );
         }
       }
@@ -82,6 +74,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final formState = ref.watch(habitFormProvider(widget.habit));
+    final formNotifier = ref.read(habitFormProvider(widget.habit).notifier);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -114,6 +109,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 label: AppStrings.habitName,
                 hint: AppStrings.habitNameHint,
                 controller: _nameController,
+                onChanged: formNotifier.updateName,
               ),
               SizedBox(height: AppDimensions.spacingXxl),
               Text(
@@ -138,9 +134,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 itemCount: _icons.length,
                 itemBuilder: (context, index) {
                   final item = _icons[index];
-                  final isSelected = _selectedIcon == item['name'];
+                  final isSelected = formState.icon == item['name'];
                   return GestureDetector(
-                    onTap: () => setState(() => _selectedIcon = item['name']),
+                    onTap: () => formNotifier.updateIcon(item['name']),
                     child: Container(
                       decoration: BoxDecoration(
                         color: isSelected
@@ -182,9 +178,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   separatorBuilder: (_, __) => const SizedBox(width: AppDimensions.spacingSm),
                   itemBuilder: (context, index) {
                     final color = AppValues.habitColors[index];
-                    final isSelected = _selectedColor == color;
+                    final isSelected = formState.color == color;
                     return GestureDetector(
-                      onTap: () => setState(() => _selectedColor = color),
+                      onTap: () => formNotifier.updateColor(color),
                       child: Container(
                         width: AppDimensions.cardHeightSm,
                         height: AppDimensions.cardHeightSm,
@@ -225,15 +221,15 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                     Expanded(
                       child: FrequencyToggle(
                         text: AppValues.frequencyDaily,
-                        isSelected: _frequency == AppValues.frequencyDaily,
-                        onTap: () => setState(() => _frequency = AppValues.frequencyDaily),
+                        isSelected: formState.frequency == AppValues.frequencyDaily,
+                        onTap: () => formNotifier.updateFrequency(AppValues.frequencyDaily),
                       ),
                     ),
                     Expanded(
                       child: FrequencyToggle(
                         text: AppValues.frequencyWeekly,
-                        isSelected: _frequency == AppValues.frequencyWeekly,
-                        onTap: () => setState(() => _frequency = AppValues.frequencyWeekly),
+                        isSelected: formState.frequency == AppValues.frequencyWeekly,
+                        onTap: () => formNotifier.updateFrequency(AppValues.frequencyWeekly),
                       ),
                     ),
                   ],
@@ -243,17 +239,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: AppValues.daysOfWeek.map((day) {
-                  final isSelected = _selectedDays.contains(day);
+                  final isSelected = formState.selectedDays.contains(day);
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          _selectedDays.remove(day);
-                        } else {
-                          _selectedDays.add(day);
-                        }
-                      });
-                    },
+                    onTap: () => formNotifier.toggleDay(day),
                     child: Container(
                       width: AppDimensions.avatarSizeSm,
                       height: AppDimensions.avatarSizeSm,
@@ -307,8 +295,8 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                     ),
                     const Spacer(),
                     Switch(
-                      value: _remindersEnabled,
-                      onChanged: (v) => setState(() => _remindersEnabled = v),
+                      value: formState.remindersEnabled,
+                      onChanged: formNotifier.updateReminders,
                       activeTrackColor: AppColors.primaryAccent,
                     ),
                   ],
