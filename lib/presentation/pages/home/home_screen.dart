@@ -18,6 +18,7 @@ import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/core/constants/app_values.dart';
+import 'package:habits_app/presentation/widgets/common/loading_animation.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -50,6 +51,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final habitState = ref.watch(habitProvider);
+
+    if (habitState.isLoading) {
+      return Scaffold(
+        body: Center(
+          child: LoadingAnimation(),
+        ),
+      );
+    }
 
     final barColor = isDark ? AppColors.surface : AppColors.lightSurface;
     const activeItemColor = AppColors.primaryAccent;
@@ -88,7 +98,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             StatisticsScreen(scrollController: controller),
             const SizedBox.shrink(),
             const PlaceholderView(title: AppStrings.social),
-            const ProfileScreen(),
+            const ProfileScreen(showBackButton: false),
           ],
         ),
         child: Stack(

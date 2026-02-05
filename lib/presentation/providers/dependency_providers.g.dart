@@ -501,3 +501,51 @@ final class GetHabitStatsUseCaseProvider
 
 String _$getHabitStatsUseCaseHash() =>
     r'b6a307ae715653b9df8245fe1e13a7684fcaf910';
+
+@ProviderFor(loadingDelayUseCase)
+const loadingDelayUseCaseProvider = LoadingDelayUseCaseProvider._();
+
+final class LoadingDelayUseCaseProvider
+    extends
+        $FunctionalProvider<
+          LoadingDelayUseCase,
+          LoadingDelayUseCase,
+          LoadingDelayUseCase
+        >
+    with $Provider<LoadingDelayUseCase> {
+  const LoadingDelayUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'loadingDelayUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$loadingDelayUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<LoadingDelayUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  LoadingDelayUseCase create(Ref ref) {
+    return loadingDelayUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LoadingDelayUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LoadingDelayUseCase>(value),
+    );
+  }
+}
+
+String _$loadingDelayUseCaseHash() =>
+    r'8ceef1319681deacc7bfa28ab2c370ad11bc7a50';

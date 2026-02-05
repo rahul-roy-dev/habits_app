@@ -1,5 +1,11 @@
 import 'package:get_it/get_it.dart';
 
+// Data Sources
+import 'package:habits_app/data/datasources/hive_data_version_service.dart';
+
+// Domain Interfaces
+import 'package:habits_app/domain/repositories/data/i_data_version_service.dart';
+
 // Repositories
 import 'package:habits_app/data/repositories/auth_repository.dart';
 import 'package:habits_app/data/repositories/habit_repository.dart';
@@ -11,14 +17,10 @@ import 'package:habits_app/domain/repositories/habit/i_habit_repository.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_reader.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_writer.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_completion.dart';
-
-// Use Cases - Auth
 import 'package:habits_app/domain/usecases/auth/login_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/logout_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/register_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/get_current_user_usecase.dart';
-
-// Use Cases - Habit
 import 'package:habits_app/domain/usecases/habit/get_habits_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/add_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/update_habit_usecase.dart';
@@ -29,6 +31,12 @@ import 'package:habits_app/domain/usecases/habit/get_habit_stats_usecase.dart';
 final GetIt sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
+  // ========== Data Sources (Data Layer) ==========
+  // Register data sources as singletons
+  
+  // Hive Data Version Service - handles data migration
+  sl.registerLazySingleton<IDataVersionService>(() => HiveDataVersionService());
+
   // ========== Repositories (Data Layer) ==========
   // Register concrete implementations as singletons
   

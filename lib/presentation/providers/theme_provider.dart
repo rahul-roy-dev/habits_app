@@ -11,14 +11,13 @@ class AppThemeMode extends _$AppThemeMode {
   
   @override
   ThemeMode build() {
-    return ThemeMode.system;
-  }
-
-  Future<void> init() async {
-    _box = await Hive.openBox(AppValues.themeBoxName);
+    _box = Hive.box(AppValues.themeBoxName);
     final isDark = _box.get(AppValues.isDarkThemeKey);
+    
     if (isDark != null) {
-      state = isDark ? ThemeMode.dark : ThemeMode.light;
+      return isDark ? ThemeMode.dark : ThemeMode.light;
+    } else {
+      return ThemeMode.dark;
     }
   }
 

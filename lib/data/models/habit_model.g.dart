@@ -33,7 +33,7 @@ class HabitModelAdapter extends TypeAdapter<HabitModel> {
       completionDates: fields[7] == null
           ? const []
           : (fields[7] as List).cast<DateTime>(),
-      userId: fields[8] as String,
+      userId: fields[8] as String?,
     );
   }
 

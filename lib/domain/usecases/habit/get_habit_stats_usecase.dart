@@ -1,5 +1,34 @@
 import 'package:habits_app/domain/repositories/habit/i_habit_reader.dart';
 
+/// Parameters for get completion progress use case
+class GetCompletionProgressParams {
+  final String userId;
+  final DateTime date;
+
+  const GetCompletionProgressParams({
+    required this.userId,
+    required this.date,
+  });
+}
+
+/// Parameters for get completed count use case
+class GetCompletedCountParams {
+  final String userId;
+  final DateTime date;
+
+  const GetCompletedCountParams({
+    required this.userId,
+    required this.date,
+  });
+}
+
+/// Parameters for get total habits use case
+class GetTotalHabitsParams {
+  final String userId;
+
+  const GetTotalHabitsParams({required this.userId});
+}
+
 /// Use case for calculating habit statistics
 class GetHabitStatsUseCase {
   final IHabitReader _habitReader;
@@ -7,7 +36,6 @@ class GetHabitStatsUseCase {
   GetHabitStatsUseCase(this._habitReader);
 
   /// Get the completion progress for a specific date
-  /// Returns a value between 0.0 and 1.0
   double getCompletionProgress(String userId, DateTime date) {
     final habits = _habitReader.getHabitsForUser(userId);
     if (habits.isEmpty) return 0.0;

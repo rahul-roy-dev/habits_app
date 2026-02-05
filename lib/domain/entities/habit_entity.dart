@@ -9,7 +9,7 @@ class HabitEntity {
   final String icon;
   final int color;
   final List<DateTime> completionDates;
-  final String userId;
+  final String? userId;
 
   const HabitEntity({
     required this.id,
@@ -20,7 +20,7 @@ class HabitEntity {
     this.icon = AppValues.defaultHabitIcon,
     this.color = AppValues.defaultHabitColor,
     this.completionDates = const [],
-    required this.userId,
+    this.userId,
   });
 
   HabitEntity copyWith({

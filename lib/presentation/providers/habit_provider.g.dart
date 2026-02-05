@@ -40,7 +40,7 @@ final class HabitProvider extends $NotifierProvider<Habit, HabitState> {
   }
 }
 
-String _$habitHash() => r'b8751dec265860f5ca0f03f4b1752955a0d65d44';
+String _$habitHash() => r'8b94d615368cae3ee62440f0265fc6bd4df44db5';
 
 abstract class _$Habit extends $Notifier<HabitState> {
   HabitState build();

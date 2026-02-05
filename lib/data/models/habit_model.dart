@@ -30,7 +30,7 @@ class HabitModel extends HiveObject {
   final List<DateTime> completionDates;
 
   @HiveField(8)
-  final String userId;
+  final String? userId;
 
   HabitModel({
     required this.id,
@@ -41,7 +41,7 @@ class HabitModel extends HiveObject {
     this.icon = AppValues.defaultHabitIcon,
     this.color = AppValues.defaultHabitColor,
     this.completionDates = const [],
-    required this.userId,
+    this.userId,
   });
 
   HabitModel copyWith({

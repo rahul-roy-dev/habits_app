@@ -12,7 +12,7 @@ class HabitRepository implements IHabitRepository {
 
   Box<HabitModel> get _box => Hive.box<HabitModel>(AppValues.habitBoxName);
 
-  // Convert HabitModel to HabitEntity
+  /// Converts HabitModel to HabitEntity
   HabitEntity _toEntity(HabitModel model) {
     return HabitEntity(
       id: model.id,
@@ -27,7 +27,6 @@ class HabitRepository implements IHabitRepository {
     );
   }
 
-  // Convert HabitEntity to HabitModel
   HabitModel _toModel(HabitEntity entity) {
     return HabitModel(
       id: entity.id,
@@ -41,6 +40,7 @@ class HabitRepository implements IHabitRepository {
       userId: entity.userId,
     );
   }
+
 
   // ========== IHabitReader Implementation ==========
   

@@ -7,11 +7,11 @@ import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/providers/theme_provider.dart';
 import 'package:habits_app/presentation/widgets/common/profile_menu_item.dart';
-import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class ProfileScreen extends ConsumerWidget {
-  const ProfileScreen({super.key});
+  final bool showBackButton;
+  
+  const ProfileScreen({super.key, this.showBackButton = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,14 +26,7 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Padding(
-           padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
-          child: CustomIconButton(
-            icon: LucideIcons.chevronLeft,
-            onPressed: () => Navigator.pop(context),
-            isActive: false,
-          ),
-        ),
+        automaticallyImplyLeading: showBackButton,
         title: Text(
           'Profile',
           style: TextStyle(

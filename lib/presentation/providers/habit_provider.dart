@@ -46,23 +46,47 @@ class Habit extends _$Habit {
       }
     });
     
-    try {
-      final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
-      return HabitState(habits: habits);
-    } catch (_) {
-      return const HabitState();
-    }
+    state = const HabitState(isLoading: true);
+    
+    Future.microtask(() async {
+      await ref.read(loadingDelayUseCaseProvider).execute();
+      
+      try {
+        final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
+        state = HabitState(habits: habits, isLoading: false);
+      } catch (_) {
+        state = const HabitState(isLoading: false);
+      }
+    });
+    
+    return const HabitState(isLoading: true);
   }
 
   Future<void> loadHabits() async {
     final user = ref.read(authProvider).currentUser;
     if (user == null) return;
 
+    state = state.copyWith(isLoading: true);
+    
+    await ref.read(loadingDelayUseCaseProvider).execute();
+
     try {
       final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
       state = state.copyWith(habits: habits, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> _refreshHabitsWithoutDelay() async {
+    final user = ref.read(authProvider).currentUser;
+    if (user == null) return;
+
+    try {
+      final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
+      state = state.copyWith(habits: habits);
+    } catch (e) {
+      // Handle error silently for background refresh
     }
   }
 
@@ -82,22 +106,22 @@ class Habit extends _$Habit {
       color: color,
       userId: user.id,
     );
-    await loadHabits();
+    await _refreshHabitsWithoutDelay();
   }
 
   Future<void> updateHabit(String habitId, HabitEntity habit) async {
     await ref.read(updateHabitUseCaseProvider).execute(habitId, habit);
-    await loadHabits();
+    await _refreshHabitsWithoutDelay();
   }
 
   Future<void> toggleHabit(HabitEntity habit, DateTime date) async {
     await ref.read(toggleHabitUseCaseProvider).execute(habit, date);
-    await loadHabits();
+    await _refreshHabitsWithoutDelay();
   }
 
   Future<void> deleteHabit(HabitEntity habit) async {
     await ref.read(deleteHabitUseCaseProvider).execute(habit);
-    await loadHabits();
+    await _refreshHabitsWithoutDelay();
   }
 }
 
