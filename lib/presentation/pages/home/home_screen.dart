@@ -177,6 +177,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 }
 
+// _DashboardTab adalah private class di file yang sama – bisa di-extract ke file terpisah untuk readability.
 class _DashboardTab extends ConsumerWidget {
   final ScrollController? controller;
 
@@ -232,6 +233,8 @@ class _DashboardTab extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
+                  // AppStrings.goodMorning hardcoded – bisa ditambahkan logic
+                  // untuk "Good Morning"/"Good Afternoon"/"Good Evening" berdasarkan waktu aktual.
                   AppStrings.goodMorning,
                   style: TextStyle(
                     color: isDark

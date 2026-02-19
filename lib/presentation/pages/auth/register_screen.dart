@@ -177,6 +177,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           fontSize: AppDimensions.fontSizeSm,
                         ),
                         children: [
+                          // Beberapa string masih hardcoded ('Create Your\nAccount',
+                          // 'Join the community...', 'Already have an account?')
+                          // – idealnya dipindahkan ke AppStrings untuk konsistensi.
                           TextSpan(
                             text: 'Terms of Service',
                             style: TextStyle(
