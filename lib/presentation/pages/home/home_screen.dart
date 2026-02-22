@@ -34,11 +34,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: AppDimensions.tabCount, vsync: this);
-    _initData();
-  }
-
-  Future<void> _initData() async {
-    await ref.read(authProvider.notifier).checkAuthStatus();
   }
 
   @override

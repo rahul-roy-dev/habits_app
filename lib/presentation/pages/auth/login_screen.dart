@@ -24,6 +24,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoggingIn = false;
 
   @override
   void dispose() {
@@ -33,26 +34,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      final success = await ref.read(authProvider.notifier).login(
-            _emailController.text.trim(),
-            _passwordController.text.trim(),
-          );
-
-      if (!mounted) return;
-
-      if (success) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
-        });
-      } else {
-        CustomToast.showError(
-          context,
-          ref.read(authProvider).errorMessage ?? AppStrings.loginFailed,
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoggingIn = true);
+    final success = await ref.read(authProvider.notifier).login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
-      }
+    if (!mounted) return;
+    setState(() => _isLoggingIn = false);
+    if (!mounted) return;
+    if (success) {
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } else {
+      CustomToast.showError(
+        context,
+        ref.read(authProvider).errorMessage ?? AppStrings.invalidEmailOrPassword,
+      );
     }
+  }
+
+  void _handleGoogleSignIn() async {
+    // TODO: Sign in with Google — enable after Google Cloud / Firebase Web client ID
+    //       configuration is done. Then call signInWithGoogle() and handle success/navigation.
+    if (!mounted) return;
+    CustomToast.showError(context, AppStrings.signInWithGoogleComingNext);
   }
 
   @override
@@ -189,7 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   CustomButton(
                     text: AppStrings.signIn,
                     onPressed: _handleLogin,
-                    isLoading: authState.isLoading,
+                    isLoading: _isLoggingIn,
                   ),
                   SizedBox(height: AppDimensions.spacingXl),
                   Row(
@@ -225,7 +230,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   SocialButton(
                     iconPath: AppAssets.googleIcon,
                     text: AppStrings.continueWithGoogle,
-                    onPressed: () {},
+                    onPressed: _isLoggingIn ? () {} : _handleGoogleSignIn,
                   ),
                   if (Platform.isIOS) ...[
                     SizedBox(height: AppDimensions.spacingMd),

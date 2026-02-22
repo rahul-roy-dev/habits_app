@@ -31,11 +31,11 @@ class Habit extends _$Habit {
   HabitState build() {
     final authState = ref.watch(authProvider);
     final user = authState.currentUser;
-    
+
     if (user == null) {
       return const HabitState();
     }
-    
+
     ref.listen(authProvider, (_, next) {
       if (next.currentUser != user) {
         if (next.currentUser != null) {
@@ -45,12 +45,18 @@ class Habit extends _$Habit {
         }
       }
     });
-    
+
+    final userId = user.id;
+    Future.microtask(() => _loadInitialHabits(userId));
+    return const HabitState(isLoading: true);
+  }
+
+  Future<void> _loadInitialHabits(String userId) async {
     try {
-      final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
-      return HabitState(habits: habits);
+      final habits = await ref.read(getHabitsUseCaseProvider).execute(userId);
+      state = state.copyWith(habits: habits, isLoading: false);
     } catch (_) {
-      return const HabitState();
+      state = state.copyWith(habits: const [], isLoading: false);
     }
   }
 
@@ -59,7 +65,7 @@ class Habit extends _$Habit {
     if (user == null) return;
 
     try {
-      final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
+      final habits = await ref.read(getHabitsUseCaseProvider).execute(user.id);
       state = state.copyWith(habits: habits, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -110,31 +116,17 @@ int totalHabits(Ref ref) {
 double habitCompletionProgress(Ref ref, DateTime date) {
   final habits = ref.watch(habitProvider).habits;
   if (habits.isEmpty) return 0.0;
-
-  int completedCount = 0;
-  for (var habit in habits) {
-    bool isCompletedOnDate = habit.completionDates.any(
-      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
-    );
-    if (isCompletedOnDate) completedCount++;
-  }
-
+  final completedCount = habits.where((h) => h.isCompletedOnDate(date)).length;
   return completedCount / habits.length;
 }
 
 @riverpod
 bool isHabitCompleted(Ref ref, {required HabitEntity habit, required DateTime date}) {
-  return habit.completionDates.any(
-    (d) => d.year == date.year && d.month == date.month && d.day == date.day,
-  );
+  return habit.isCompletedOnDate(date);
 }
 
 @riverpod
 int completedHabitsCount(Ref ref, DateTime date) {
   final habits = ref.watch(habitProvider).habits;
-  return habits.where((habit) {
-    return habit.completionDates.any(
-      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
-    );
-  }).length;
+  return habits.where((h) => h.isCompletedOnDate(date)).length;
 }

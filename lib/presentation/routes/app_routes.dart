@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/presentation/pages/placeholder_screen.dart';
-import 'package:habits_app/presentation/pages/auth/login_screen.dart';
+import 'package:habits_app/presentation/pages/auth/auth_gate_screen.dart';
 import 'package:habits_app/presentation/pages/auth/register_screen.dart';
 import 'package:habits_app/presentation/pages/home/home_screen.dart';
 import 'package:habits_app/presentation/pages/habits/add_habit_screen.dart';
@@ -20,7 +20,7 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case login:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) => const AuthGateScreen());
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case home:

@@ -23,6 +23,8 @@ class AppStrings {
   static const String passwordRequired = 'Password is required';
   static const String passwordMinLength = 'Password must be at least 6 characters';
   static const String invalidEmailOrPassword = 'Invalid email or password';
+  static const String signInWithGoogleFailed = 'Sign in with Google failed';
+  static const String signInWithGoogleComingNext = 'Coming in the next task.';
   static const String emailAlreadyExists = 'Email already exists';
   static const String accountCreatedSuccessfully = 'Account created Successfully';
 

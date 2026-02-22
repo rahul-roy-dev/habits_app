@@ -8,7 +8,7 @@ class GetHabitsUseCase {
   GetHabitsUseCase(this._habitReader);
 
 
-  List<HabitEntity> execute(String userId) {
+  Future<List<HabitEntity>> execute(String userId) async {
     return _habitReader.getHabitsForUser(userId);
   }
 }

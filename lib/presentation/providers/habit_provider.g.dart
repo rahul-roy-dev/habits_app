@@ -40,7 +40,7 @@ final class HabitProvider extends $NotifierProvider<Habit, HabitState> {
   }
 }
 
-String _$habitHash() => r'b8751dec265860f5ca0f03f4b1752955a0d65d44';
+String _$habitHash() => r'8671499ff4d5179e2f4673a17b12555d78701298';
 
 abstract class _$Habit extends $Notifier<HabitState> {
   HabitState build();
@@ -160,7 +160,7 @@ final class HabitCompletionProgressProvider
 }
 
 String _$habitCompletionProgressHash() =>
-    r'7a827590b620b6328438485b67d3ec0d122634c1';
+    r'4b338332e4d09b5385109ca158abad062d5e023e';
 
 final class HabitCompletionProgressFamily extends $Family
     with $FunctionalFamilyOverride<double, DateTime> {
@@ -237,7 +237,7 @@ final class IsHabitCompletedProvider
   }
 }
 
-String _$isHabitCompletedHash() => r'ff4c5851badaf464abb9f177dbbebd3c81044020';
+String _$isHabitCompletedHash() => r'694137fb0562c366d3664a75ff02556461decbc6';
 
 final class IsHabitCompletedFamily extends $Family
     with $FunctionalFamilyOverride<bool, ({HabitEntity habit, DateTime date})> {
@@ -320,7 +320,7 @@ final class CompletedHabitsCountProvider
 }
 
 String _$completedHabitsCountHash() =>
-    r'39b1098d96d956fba43e646e40cad238856af67f';
+    r'db55ba248fcf82b7315b6835daaf46c3fb4a80ef';
 
 final class CompletedHabitsCountFamily extends $Family
     with $FunctionalFamilyOverride<int, DateTime> {

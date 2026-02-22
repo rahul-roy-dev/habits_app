@@ -23,6 +23,14 @@ class HabitEntity {
     required this.userId,
   });
 
+  bool isCompletedOnDate(DateTime date) {
+    final normalized = DateTime(date.year, date.month, date.day);
+    return completionDates.any((d) =>
+        d.year == normalized.year &&
+        d.month == normalized.month &&
+        d.day == normalized.day);
+  }
+
   HabitEntity copyWith({
     String? id,
     String? title,

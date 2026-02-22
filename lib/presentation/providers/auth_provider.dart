@@ -37,7 +37,6 @@ class AuthState {
 class Auth extends _$Auth {
   @override
   AuthState build() {
-    // Initialize with loading state
     final authState = const AuthState(isLoading: true);
     
     ref.read(getCurrentUserUseCaseProvider).execute().then((user) {
@@ -66,15 +65,35 @@ class Auth extends _$Auth {
   }
 
   Future<bool> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, clearError: true);
-    
+    state = state.copyWith(clearError: true);
+
     try {
       final user = await ref.read(loginUseCaseProvider).execute(email, password);
-      
+
+      if (user == null) {
+        state = state.copyWith(errorMessage: AppStrings.invalidEmailOrPassword);
+        return false;
+      }
+
+      state = state.copyWith(currentUser: user);
+      return true;
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+      return false;
+    }
+  }
+
+  // TODO: Sign in with Google — re-enable from login_screen after Google Cloud config (Web client ID).
+  Future<bool> signInWithGoogle() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final user = await ref.read(signInWithGoogleUseCaseProvider).execute();
+
       if (user == null) {
         state = state.copyWith(
-          isLoading: false, 
-          errorMessage: AppStrings.invalidEmailOrPassword
+          isLoading: false,
+          errorMessage: AppStrings.signInWithGoogleFailed,
         );
         return false;
       }

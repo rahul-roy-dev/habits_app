@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
 
 // Repositories
-import 'package:habits_app/data/repositories/auth_repository.dart';
-import 'package:habits_app/data/repositories/habit_repository.dart';
+import 'package:habits_app/data/repositories/firebase_auth_repository.dart';
+import 'package:habits_app/data/repositories/firestore_habit_repository.dart';
 import 'package:habits_app/domain/repositories/auth/i_auth_repository.dart';
 import 'package:habits_app/domain/repositories/auth/i_authenticator.dart';
 import 'package:habits_app/domain/repositories/auth/i_user_registration.dart';
@@ -17,6 +17,7 @@ import 'package:habits_app/domain/usecases/auth/login_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/logout_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/register_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:habits_app/domain/usecases/auth/sign_in_with_google_usecase.dart';
 
 // Use Cases - Habit
 import 'package:habits_app/domain/usecases/habit/get_habits_usecase.dart';
@@ -32,23 +33,19 @@ Future<void> setupServiceLocator() async {
   // ========== Repositories (Data Layer) ==========
   // Register concrete implementations as singletons
   
-  // Auth Repository - implements all auth-related interfaces
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepository());
-  
-  // Register segregated interfaces pointing to the same implementation
-  sl.registerLazySingleton<IAuthRepository>(() => sl<AuthRepository>());
-  sl.registerLazySingleton<IAuthenticator>(() => sl<AuthRepository>());
-  sl.registerLazySingleton<IUserRegistration>(() => sl<AuthRepository>());
-  sl.registerLazySingleton<IUserManager>(() => sl<AuthRepository>());
+  // Auth Repository - Firebase implementation (DIP: depend on interfaces)
+  sl.registerLazySingleton<FirebaseAuthRepository>(() => FirebaseAuthRepository());
+  sl.registerLazySingleton<IAuthRepository>(() => sl<FirebaseAuthRepository>());
+  sl.registerLazySingleton<IAuthenticator>(() => sl<FirebaseAuthRepository>());
+  sl.registerLazySingleton<IUserRegistration>(() => sl<FirebaseAuthRepository>());
+  sl.registerLazySingleton<IUserManager>(() => sl<FirebaseAuthRepository>());
 
-  // Habit Repository - implements all habit-related interfaces
-  sl.registerLazySingleton<HabitRepository>(() => HabitRepository());
-  
-  // Register segregated interfaces pointing to the same implementation
-  sl.registerLazySingleton<IHabitRepository>(() => sl<HabitRepository>());
-  sl.registerLazySingleton<IHabitReader>(() => sl<HabitRepository>());
-  sl.registerLazySingleton<IHabitWriter>(() => sl<HabitRepository>());
-  sl.registerLazySingleton<IHabitCompletion>(() => sl<HabitRepository>());
+  // Habit Repository - Firestore implementation
+  sl.registerLazySingleton<FirestoreHabitRepository>(() => FirestoreHabitRepository());
+  sl.registerLazySingleton<IHabitRepository>(() => sl<FirestoreHabitRepository>());
+  sl.registerLazySingleton<IHabitReader>(() => sl<FirestoreHabitRepository>());
+  sl.registerLazySingleton<IHabitWriter>(() => sl<FirestoreHabitRepository>());
+  sl.registerLazySingleton<IHabitCompletion>(() => sl<FirestoreHabitRepository>());
 
   // ========== Use Cases (Domain Layer) ==========
   
@@ -64,6 +61,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<GetCurrentUserUseCase>(
     () => GetCurrentUserUseCase(sl<IAuthenticator>()),
+  );
+  sl.registerLazySingleton<SignInWithGoogleUseCase>(
+    () => SignInWithGoogleUseCase(sl<IAuthenticator>()),
   );
 
   // Habit Use Cases

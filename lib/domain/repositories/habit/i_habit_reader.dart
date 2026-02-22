@@ -1,8 +1,8 @@
 import 'package:habits_app/domain/entities/habit_entity.dart';
 
-/// Interface for reading habit data
+/// Interface for reading habit data (async for cloud backends e.g. Firestore)
 abstract class IHabitReader {
-  List<HabitEntity> getHabitsForUser(String userId);
-  
-  HabitEntity? getHabitById(String habitId);
+  Future<List<HabitEntity>> getHabitsForUser(String userId);
+
+  Future<HabitEntity?> getHabitById(String habitId);
 }

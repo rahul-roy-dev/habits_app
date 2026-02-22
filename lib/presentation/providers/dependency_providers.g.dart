@@ -181,6 +181,54 @@ final class GetCurrentUserUseCaseProvider
 String _$getCurrentUserUseCaseHash() =>
     r'5d94330a4793d68807aaf75ab049cf416b033a79';
 
+@ProviderFor(signInWithGoogleUseCase)
+const signInWithGoogleUseCaseProvider = SignInWithGoogleUseCaseProvider._();
+
+final class SignInWithGoogleUseCaseProvider
+    extends
+        $FunctionalProvider<
+          SignInWithGoogleUseCase,
+          SignInWithGoogleUseCase,
+          SignInWithGoogleUseCase
+        >
+    with $Provider<SignInWithGoogleUseCase> {
+  const SignInWithGoogleUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'signInWithGoogleUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$signInWithGoogleUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<SignInWithGoogleUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  SignInWithGoogleUseCase create(Ref ref) {
+    return signInWithGoogleUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SignInWithGoogleUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SignInWithGoogleUseCase>(value),
+    );
+  }
+}
+
+String _$signInWithGoogleUseCaseHash() =>
+    r'649c494595c84c41df2e3919fc60b1715e9bbdf4';
+
 @ProviderFor(userManager)
 const userManagerProvider = UserManagerProvider._();
 

@@ -6,6 +6,7 @@ import 'package:habits_app/domain/usecases/auth/login_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/logout_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/register_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/get_current_user_usecase.dart';
+import 'package:habits_app/domain/usecases/auth/sign_in_with_google_usecase.dart';
 
 // Use Cases - Habit
 import 'package:habits_app/domain/usecases/habit/get_habits_usecase.dart';
@@ -31,6 +32,9 @@ RegisterUseCase registerUseCase(Ref ref) => sl<RegisterUseCase>();
 
 @riverpod
 GetCurrentUserUseCase getCurrentUserUseCase(Ref ref) => sl<GetCurrentUserUseCase>();
+
+@riverpod
+SignInWithGoogleUseCase signInWithGoogleUseCase(Ref ref) => sl<SignInWithGoogleUseCase>();
 
 @riverpod
 IUserManager userManager(Ref ref) => sl<IUserManager>();

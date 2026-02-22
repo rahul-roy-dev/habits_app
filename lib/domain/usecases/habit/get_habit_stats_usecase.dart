@@ -8,38 +8,22 @@ class GetHabitStatsUseCase {
 
   /// Get the completion progress for a specific date
   /// Returns a value between 0.0 and 1.0
-  double getCompletionProgress(String userId, DateTime date) {
-    final habits = _habitReader.getHabitsForUser(userId);
+  Future<double> getCompletionProgress(String userId, DateTime date) async {
+    final habits = await _habitReader.getHabitsForUser(userId);
     if (habits.isEmpty) return 0.0;
-
-    int completedCount = 0;
-    for (var habit in habits) {
-      bool isCompletedOnDate = habit.completionDates.any(
-        (d) => d.year == date.year && d.month == date.month && d.day == date.day,
-      );
-      if (isCompletedOnDate) completedCount++;
-    }
-
+    final completedCount = habits.where((h) => h.isCompletedOnDate(date)).length;
     return completedCount / habits.length;
   }
 
   /// Get the count of completed habits for a specific date
-  int getCompletedCount(String userId, DateTime date) {
-    final habits = _habitReader.getHabitsForUser(userId);
-    return habits
-        .where(
-          (habit) => habit.completionDates.any(
-            (d) =>
-                d.year == date.year &&
-                d.month == date.month &&
-                d.day == date.day,
-          ),
-        )
-        .length;
+  Future<int> getCompletedCount(String userId, DateTime date) async {
+    final habits = await _habitReader.getHabitsForUser(userId);
+    return habits.where((h) => h.isCompletedOnDate(date)).length;
   }
 
   /// Get total number of habits for a user
-  int getTotalHabits(String userId) {
-    return _habitReader.getHabitsForUser(userId).length;
+  Future<int> getTotalHabits(String userId) async {
+    final habits = await _habitReader.getHabitsForUser(userId);
+    return habits.length;
   }
 }
