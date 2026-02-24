@@ -36,6 +36,7 @@ class Habit extends _$Habit {
       return const HabitState();
     }
     
+    //{Inline Review: Listener di dalam `build()` berisiko terpasang ulang saat recompute; pertimbangkan lifecycle yang lebih terkontrol.}
     ref.listen(authProvider, (_, next) {
       if (next.currentUser != user) {
         if (next.currentUser != null) {
@@ -55,6 +56,7 @@ class Habit extends _$Habit {
         final habits = ref.read(getHabitsUseCaseProvider).execute(user.id);
         state = HabitState(habits: habits, isLoading: false);
       } catch (_) {
+        //{Inline Review: Error sebaiknya dipropagasikan ke state (mis. error message) agar UI bisa menampilkan fallback yang jelas.}
         state = const HabitState(isLoading: false);
       }
     });

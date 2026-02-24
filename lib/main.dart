@@ -21,6 +21,7 @@ Future<void> main() async {
 
   await sl<IDataVersionService>().initialize();
 
+  //{Inline Review: Tambahkan guard `Hive.isAdapterRegistered` sebelum register adapter agar aman saat re-init/hot restart.}
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(HabitModelAdapter());
 

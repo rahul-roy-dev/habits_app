@@ -71,12 +71,14 @@ class HabitRepository implements IHabitRepository {
 
   @override
   Future<void> updateHabit(String habitId, HabitEntity habit) async {
+    //{Inline Review: `firstWhere` tanpa fallback dapat melempar exception bila id tidak ditemukan; tambahkan guard not-found.}
     final model = _box.values.firstWhere((m) => m.id == habitId);
     await _box.put(model.key, _toModel(habit));
   }
 
   @override
   Future<void> deleteHabit(HabitEntity habit) async {
+    //{Inline Review: Operasi delete sebaiknya fail-safe (try/catch atau safe lookup) untuk menghindari crash saat data stale.}
     final model = _box.values.firstWhere((m) => m.id == habit.id);
     await model.delete();
   }
