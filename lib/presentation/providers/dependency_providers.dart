@@ -1,7 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:habits_app/core/di/service_locator.dart';
-
-// Use Cases - Auth
 import 'package:habits_app/domain/usecases/auth/login_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/logout_usecase.dart';
 import 'package:habits_app/domain/usecases/auth/register_usecase.dart';
@@ -15,8 +13,7 @@ import 'package:habits_app/domain/usecases/habit/update_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/delete_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/toggle_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/get_habit_stats_usecase.dart';
-
-// Repositories needed for ViewModel logic
+import 'package:habits_app/domain/usecases/common/loading_delay_usecase.dart';
 import 'package:habits_app/domain/repositories/auth/i_user_manager.dart';
 
 part 'dependency_providers.g.dart';
@@ -56,3 +53,6 @@ ToggleHabitUseCase toggleHabitUseCase(Ref ref) => sl<ToggleHabitUseCase>();
 
 @riverpod
 GetHabitStatsUseCase getHabitStatsUseCase(Ref ref) => sl<GetHabitStatsUseCase>();
+
+@riverpod
+LoadingDelayUseCase loadingDelayUseCase(Ref ref) =>  LoadingDelayUseCase();
