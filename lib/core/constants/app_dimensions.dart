@@ -167,4 +167,7 @@ class AppDimensions {
 
   // Form Padding
   static const double formContentSpacing = 200.0;
+
+  // Loading Animation
+  static const double loadingAnimationSize = 100.0;
 }

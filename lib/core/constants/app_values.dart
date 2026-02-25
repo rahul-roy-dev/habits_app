@@ -7,6 +7,9 @@ class AppValues {
   static const int hiveUserTypeId = 0;
   static const int hiveHabitTypeId = 1;
 
+  // Hive Data Version - Increment this when schema changes
+  static const int hiveDataVersion = 1;
+
   // Default Values
   static const int defaultHabitColor = 0xFFA78BFA;
   static const String defaultHabitIcon = 'water';
@@ -58,4 +61,18 @@ class AppValues {
 
   // Default Frequency
   static const String defaultFrequency = 'Daily';
+  
+  // Loading Animation
+  static const Duration loadingAnimationDuration = Duration(seconds: 3);
+
+  // Statistics Constants
+  static const double highPerformanceThreshold = 80.0;
+  static const double chartHeightMultiplier = 1.5;
+  static const String productiveHoursStart = '9 AM';
+  static const double productivityIncreasePercentage = 30.0;
+  
+  // Demo Progress Constants
+  static const double yogaProgress = 0.7;
+  static const double hydrationProgress = 0.4;
+  static const double readingProgress = 0.9;
 }
