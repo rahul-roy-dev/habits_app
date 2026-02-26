@@ -3,26 +3,24 @@ import 'package:flutter/material.dart';
 class AppValues {
   AppValues._();
 
-  // Hive Type IDs
-  static const int hiveUserTypeId = 0;
-  static const int hiveHabitTypeId = 1;
-
   // Default Values
   static const int defaultHabitColor = 0xFFA78BFA;
   static const String defaultHabitIcon = 'water';
   static const String defaultHabitDescription = '';
 
-  // Box Names
-  static const String userBoxName = 'userBox';
-  static const String sessionBoxName = 'sessionBox';
-  static const String habitBoxName = 'habitBox';
-  static const String themeBoxName = 'theme_box';
-
-  // Keys
-  static const String currentUserKey = 'currentUser';
+  // Preferences Keys (e.g. SharedPreferences)
   static const String isDarkThemeKey = 'is_dark';
 
-  // Default Selected Days
+  // Display
+  static const int percentageScale = 100;
+
+  /// Number of weekdays (1=Mon .. 7=Sun). Used for weekday picker length.
+  static const int daysInWeek = 7;
+
+  /// Default selected weekdays as indices (1=Mon .. 7=Sun). Mon–Fri.
+  static const List<int> defaultSelectedWeekdayIndices = [1, 2, 3, 4, 5];
+
+  // Default Selected Days (labels)
   static const List<String> defaultSelectedDays = ['M', 'T', 'W', 'T', 'F'];
 
   // Days of Week

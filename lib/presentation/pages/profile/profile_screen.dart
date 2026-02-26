@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
+import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/presentation/routes/app_routes.dart';
 import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
@@ -50,7 +51,7 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: AppDimensions.spacingLg),
             Center(
               child: CustomAvatar(
-                initials: user?.name.substring(0, 1) ?? 'U',
+                initials: user?.name.substring(0, 1) ?? AppStrings.defaultUserInitial,
                 size: AppDimensions.avatarSizeXl,
               ),
             ),

@@ -34,10 +34,19 @@ class AppStrings {
   static const String todaysProgress = "TODAY'S PROGRESS";
   static const String activeHabits = 'Active Habits';
   static const String noHabitsYet = 'No habits yet. Tap + to add one!';
+  static const String ongoing = 'Ongoing';
+  static const String completed = 'Completed';
+  static const String noOngoingHabits = 'All done for this day!';
+  static const String noCompletedHabits = 'No habits completed for this day.';
+  static const String sortAZ = 'A-Z';
+  static const String sortZA = 'Z-A';
   static const String deleteHabit = 'Delete Habit';
   static const String deleteHabitConfirmation = 'Are you sure you want to delete "{habit}"?';
   static const String cancel = 'Cancel';
   static const String delete = 'Delete';
+  static const String habitCompletedTitle = 'Habit completed ?';
+  static const String habitCompletedMessage =
+      "Once completed, you can't edit or change this habit anymore.";
   static const String excellentRemaining = "Excellent! Only {count} habits remaining for a perfect day.";
   static const String amazingCompleted = "Amazing! You've completed all your habits for today!";
 

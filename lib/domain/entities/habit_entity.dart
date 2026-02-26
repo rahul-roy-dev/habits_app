@@ -10,6 +10,7 @@ class HabitEntity {
   final int color;
   final List<DateTime> completionDates;
   final String userId;
+  final List<int> selectedWeekdays;
 
   const HabitEntity({
     required this.id,
@@ -21,10 +22,25 @@ class HabitEntity {
     this.color = AppValues.defaultHabitColor,
     this.completionDates = const [],
     required this.userId,
+    this.selectedWeekdays = const [],
   });
 
+  /// Normalizes to date-only (no time) for consistent comparison.
+  static DateTime normalizeDate(DateTime d) {
+    return DateTime(d.year, d.month, d.day);
+  }
+
+  /// True if this habit should be shown on [date]. Daily (no selected weekdays)
+  /// appears every day; weekly appears only when [date].weekday is in
+  /// [selectedWeekdays].
+  bool appearsOnDate(DateTime date) {
+    final normalized = normalizeDate(date);
+    if (selectedWeekdays.isEmpty) return true;
+    return selectedWeekdays.contains(normalized.weekday);
+  }
+
   bool isCompletedOnDate(DateTime date) {
-    final normalized = DateTime(date.year, date.month, date.day);
+    final normalized = normalizeDate(date);
     return completionDates.any((d) =>
         d.year == normalized.year &&
         d.month == normalized.month &&
@@ -41,6 +57,7 @@ class HabitEntity {
     int? color,
     List<DateTime>? completionDates,
     String? userId,
+    List<int>? selectedWeekdays,
   }) {
     return HabitEntity(
       id: id ?? this.id,
@@ -52,6 +69,7 @@ class HabitEntity {
       color: color ?? this.color,
       completionDates: completionDates ?? this.completionDates,
       userId: userId ?? this.userId,
+      selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
     );
   }
 
@@ -68,7 +86,8 @@ class HabitEntity {
           icon == other.icon &&
           color == other.color &&
           completionDates == other.completionDates &&
-          userId == other.userId;
+          userId == other.userId &&
+          selectedWeekdays == other.selectedWeekdays;
 
   @override
   int get hashCode => Object.hash(
@@ -81,5 +100,6 @@ class HabitEntity {
         color,
         completionDates,
         userId,
+        Object.hashAll(selectedWeekdays),
       );
 }

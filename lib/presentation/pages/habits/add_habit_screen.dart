@@ -47,28 +47,35 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
 
   void _handleSave() async {
     final formState = ref.read(habitFormProvider(widget.habit));
-    if (_nameController.text.isNotEmpty) {
-      if (widget.habit != null) {
-        final updatedHabit = widget.habit!.copyWith(
-          title: _nameController.text.trim(),
-          description: '${formState.frequency} habit',
-          icon: formState.icon,
-          color: formState.color,
+    if (_nameController.text.isEmpty) return;
+    final isWeekly = formState.frequency == AppValues.frequencyWeekly;
+    final selectedWeekdays = isWeekly && formState.selectedWeekdays.isNotEmpty
+        ? formState.selectedWeekdays
+        : <int>[];
+
+    if (widget.habit != null) {
+      final existing = widget.habit!;
+      final updatedHabit = existing.copyWith(
+        title: _nameController.text.trim(),
+        description: '${formState.frequency} habit',
+        icon: formState.icon,
+        color: formState.color,
+        selectedWeekdays: selectedWeekdays,
+      );
+      await ref.read(habitProvider.notifier).updateHabit(widget.habit!.id, updatedHabit);
+    } else {
+      final authState = ref.read(authProvider);
+      if (authState.isAuthenticated) {
+        await ref.read(habitProvider.notifier).addHabit(
+          _nameController.text.trim(),
+          '${formState.frequency} habit',
+          formState.icon,
+          formState.color,
+          selectedWeekdays: selectedWeekdays,
         );
-        await ref.read(habitProvider.notifier).updateHabit(widget.habit!.id, updatedHabit);
-      } else {
-        final authState = ref.read(authProvider);
-        if (authState.isAuthenticated) {
-          await ref.read(habitProvider.notifier).addHabit(
-            _nameController.text.trim(),
-            '${formState.frequency} habit',
-            formState.icon,
-            formState.color,
-          );
-        }
       }
-      if (mounted) Navigator.pop(context);
     }
+    if (mounted) Navigator.pop(context);
   }
 
   @override
@@ -235,40 +242,44 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: AppDimensions.spacingLg),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: AppValues.daysOfWeek.map((day) {
-                  final isSelected = formState.selectedDays.contains(day);
-                  return GestureDetector(
-                    onTap: () => formNotifier.toggleDay(day),
-                    child: Container(
-                      width: AppDimensions.avatarSizeSm,
-                      height: AppDimensions.avatarSizeSm,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primaryAccent
-                            : (isDark
-                                  ? AppColors.surface
-                                  : AppColors.lightSurface),
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        day,
-                        style: TextStyle(
+              if (formState.frequency == AppValues.frequencyWeekly) ...[
+                SizedBox(height: AppDimensions.spacingLg),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(AppValues.daysInWeek, (index) {
+                    final weekday = index + 1;
+                    final isSelected = formState.selectedWeekdays.contains(weekday);
+                    final label = AppValues.daysOfWeek[index];
+                    return GestureDetector(
+                      onTap: () => formNotifier.toggleWeekday(weekday),
+                      child: Container(
+                        width: AppDimensions.avatarSizeSm,
+                        height: AppDimensions.avatarSizeSm,
+                        decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.white
+                              ? AppColors.primaryAccent
                               : (isDark
-                                    ? AppColors.secondaryText
-                                    : AppColors.lightSecondaryText),
-                          fontWeight: FontWeight.bold,
+                                    ? AppColors.surface
+                                    : AppColors.lightSurface),
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            color: isSelected
+                                ? AppColors.white
+                                : (isDark
+                                      ? AppColors.secondaryText
+                                      : AppColors.lightSecondaryText),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
+                    );
+                  }),
+                ),
+              ],
               SizedBox(height: AppDimensions.spacingXxl),
               CustomCard(
                 padding: const EdgeInsets.symmetric(

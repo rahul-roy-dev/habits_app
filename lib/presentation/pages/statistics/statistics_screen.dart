@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
+import 'package:habits_app/core/constants/demo_constants.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
 import 'package:habits_app/presentation/widgets/common/stat_mini_card.dart';
@@ -69,13 +70,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 Expanded(
                   child: StatMiniCard(
                     title: 'MONTHLY\nCOMPLETION',
-                    value: '84%',
+                    value: DemoConstants.monthlyCompletionValue,
                     isPercentage: true,
                   ),
                 ),
                 SizedBox(width: AppDimensions.spacingMd),
                 Expanded(
-                  child: StatMiniCard(title: 'BEST\nSTREAK', value: '24 Days'),
+                  child: StatMiniCard(
+                    title: 'BEST\nSTREAK',
+                    value: DemoConstants.bestStreakValue,
+                  ),
                 ),
               ],
             ),
@@ -126,7 +130,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   ),
                 ),
                 Text(
-                  'OCT 14 - OCT 20',
+                  DemoConstants.heatmapDateRange,
                   style: TextStyle(
                     color: isDark
                         ? AppColors.secondaryText
@@ -185,26 +189,26 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       height: AppDimensions.cardHeightLg * 2,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: const [
-          StreakCard(
-            title: 'MORNING YOGA',
-            value: '12 Days',
-            progress: 0.7,
-            icon: Icons.wb_sunny_outlined,
+        children: [
+          const StreakCard(
+            title: DemoConstants.streak1Title,
+            value: DemoConstants.streak1Value,
+            progress: DemoConstants.streak1Progress,
+            icon: DemoConstants.streak1Icon,
           ),
-          SizedBox(width: AppDimensions.spacingMd),
-          StreakCard(
-            title: 'HYDRATION',
-            value: '8 Days',
-            progress: 0.4,
-            icon: Icons.local_drink,
+          const SizedBox(width: AppDimensions.spacingMd),
+          const StreakCard(
+            title: DemoConstants.streak2Title,
+            value: DemoConstants.streak2Value,
+            progress: DemoConstants.streak2Progress,
+            icon: DemoConstants.streak2Icon,
           ),
-          SizedBox(width: AppDimensions.spacingMd),
-          StreakCard(
-            title: 'READING',
-            value: '15 Days',
-            progress: 0.9,
-            icon: Icons.menu_book,
+          const SizedBox(width: AppDimensions.spacingMd),
+          const StreakCard(
+            title: DemoConstants.streak3Title,
+            value: DemoConstants.streak3Value,
+            progress: DemoConstants.streak3Progress,
+            icon: DemoConstants.streak3Icon,
           ),
         ],
       ),
@@ -256,17 +260,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [60, 80, 70, 100, 75, 85, 40, 90, 100]
+                      children: DemoConstants.chartBarHeights
                           .map(
                             (h) => Container(
                         width: AppDimensions.chartBarWidth,
-                        height: h * 1.5,
+                        height: h * DemoConstants.chartBarHeightMultiplier,
                         decoration: BoxDecoration(
                           color:
                               (isDark
                                       ? AppColors.primaryAccent
                                       : AppColors.lightPrimaryAccent)
-                                  .withValues(alpha: h > 80 ? 1.0 : AppDimensions.opacityMd),
+                                  .withValues(alpha: h > DemoConstants.chartBarHighOpacityThreshold ? 1.0 : AppDimensions.opacityMd),
                           borderRadius: BorderRadius.circular(AppDimensions.chartBarRadius),
                               ),
                             ),
@@ -348,7 +352,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Consistency Insight',
+                      DemoConstants.insightTitle,
                       style: TextStyle(
                         color: isDark
                             ? AppColors.primaryText
@@ -358,7 +362,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     ),
                     const SizedBox(height: AppDimensions.spacingXxs),
                     Text(
-                      "You're most productive during early hours. Try setting your high-effort habits before 9 AM for a 30% higher success rate.",
+                      DemoConstants.insightMessage,
                       style: TextStyle(
                         color: isDark
                             ? AppColors.secondaryText

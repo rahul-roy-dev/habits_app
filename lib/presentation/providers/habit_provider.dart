@@ -86,8 +86,9 @@ class Habit extends _$Habit {
     String title,
     String description,
     String icon,
-    int color,
-  ) async {
+    int color, {
+    List<int> selectedWeekdays = const [],
+  }) async {
     final user = ref.read(authProvider).currentUser;
     if (user == null) return;
 
@@ -97,6 +98,7 @@ class Habit extends _$Habit {
       icon: icon,
       color: color,
       userId: user.id,
+      selectedWeekdays: selectedWeekdays,
     );
     await loadHabits();
   }

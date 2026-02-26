@@ -79,8 +79,8 @@ class AppDimensions {
 
   // Tab Controller
   static const int tabCount = 5;
-  static const int daysToShow = 7;
-  static const int dateOffsetDays = 3;
+  static const int daysToShow = 14;
+  static const int dateOffsetDays = 7;
 
   // Animation
   static const int animationDurationMs = 500;
@@ -141,6 +141,11 @@ class AppDimensions {
   // Profile Avatar
   static const double avatarSizeXl = 100.0;
 
+  // Chip (filter + sort order, same row; filter uses spacingXs + radiusMd)
+  static const double chipHeight = 36.0;
+  static const double sortChipMinWidth = 48.0;
+  static const double sortChipMaxWidth = 72.0;
+
   // Tab/Toggle Item
   static const double tabHorizontalPadding = 20.0;
   static const double tabVerticalPadding = 10.0;
@@ -164,6 +169,7 @@ class AppDimensions {
   // Elevation
   static const double elevationNone = 0.0;
   static const double elevationSm = 2.0;
+  static const double elevationMd = 4.0;
 
   // Form Padding
   static const double formContentSpacing = 200.0;

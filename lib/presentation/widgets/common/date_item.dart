@@ -6,28 +6,42 @@ import 'package:habits_app/core/constants/app_dimensions.dart';
 class DateItem extends StatelessWidget {
   final DateTime date;
   final bool isToday;
+  final bool isSelected;
+  final VoidCallback? onTap;
 
-  const DateItem({super.key, required this.date, required this.isToday});
+  const DateItem({
+    super.key,
+    required this.date,
+    required this.isToday,
+    this.isSelected = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
+    final highlighted = isSelected || isToday;
+    final color = highlighted
+        ? (isDark ? AppColors.primaryAccent : AppColors.lightPrimaryAccent)
+        : (isDark ? AppColors.surface : AppColors.lightSurface);
+    final textColor = highlighted
+        ? AppColors.white
+        : (isDark ? AppColors.primaryText : AppColors.lightPrimaryText);
+    final secondaryTextColor = highlighted
+        ? AppColors.white
+        : (isDark ? AppColors.secondaryText : AppColors.lightSecondaryText);
+
+    final content = Container(
       width: AppDimensions.dateItemWidth,
       margin: const EdgeInsets.only(right: AppDimensions.spacingSm),
       decoration: BoxDecoration(
-        color: isToday
-            ? (isDark ? AppColors.primaryAccent : AppColors.lightPrimaryAccent)
-            : (isDark ? AppColors.surface : AppColors.lightSurface),
+        color: color,
         borderRadius: BorderRadius.circular(AppDimensions.dateItemRadius),
-        boxShadow: isToday
+        boxShadow: highlighted
             ? [
                 BoxShadow(
-                  color:
-                      (isDark
-                              ? AppColors.primaryAccent
-                              : AppColors.lightPrimaryAccent)
-                          .withValues(alpha: AppDimensions.opacityMd),
+                  color: (isDark ? AppColors.primaryAccent : AppColors.lightPrimaryAccent)
+                      .withValues(alpha: AppDimensions.opacityMd),
                   blurRadius: AppDimensions.shadowBlurSm,
                   offset: const Offset(0, AppDimensions.shadowOffsetY),
                 ),
@@ -40,11 +54,7 @@ class DateItem extends StatelessWidget {
           Text(
             DateFormat('E').format(date).toUpperCase(),
             style: TextStyle(
-              color: isToday
-                  ? AppColors.white
-                  : (isDark
-                        ? AppColors.secondaryText
-                        : AppColors.lightSecondaryText),
+              color: secondaryTextColor,
               fontSize: AppDimensions.fontSizeXxs,
               fontWeight: FontWeight.bold,
             ),
@@ -53,11 +63,7 @@ class DateItem extends StatelessWidget {
           Text(
             date.day.toString(),
             style: TextStyle(
-              color: isToday
-                  ? AppColors.white
-                  : (isDark
-                        ? AppColors.primaryText
-                        : AppColors.lightPrimaryText),
+              color: textColor,
               fontSize: AppDimensions.fontSizeXxl,
               fontWeight: FontWeight.bold,
             ),
@@ -75,5 +81,14 @@ class DateItem extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: content,
+      );
+    }
+    return content;
   }
 }

@@ -9,8 +9,12 @@ import 'package:habits_app/presentation/widgets/common/placeholder_view.dart';
 import 'package:habits_app/presentation/widgets/common/header_icon.dart';
 import 'package:habits_app/presentation/widgets/common/date_item.dart';
 import 'package:habits_app/presentation/widgets/common/claim_button.dart';
+import 'package:habits_app/presentation/widgets/common/filter_chips.dart';
+import 'package:habits_app/presentation/widgets/common/sort_order_chip.dart';
 import 'package:habits_app/presentation/providers/habit_provider.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
+import 'package:habits_app/domain/common/habit_filter.dart';
+import 'package:habits_app/presentation/providers/dashboard_provider.dart';
 import 'package:habits_app/presentation/pages/statistics/statistics_screen.dart';
 import 'package:habits_app/presentation/pages/profile/profile_screen.dart';
 import 'package:habits_app/presentation/widgets/common/base_dialog.dart';
@@ -181,11 +185,13 @@ class _DashboardTab extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDateStrip(context),
+                _buildDateStrip(context, ref),
                 SizedBox(height: AppDimensions.spacingXxl),
                 _buildProgressCard(context, ref),
                 SizedBox(height: AppDimensions.spacingXxl),
-                _buildHabitListHeader(context),
+                _buildFilterChips(ref),
+                SizedBox(height: AppDimensions.spacingSm),
+                _buildHabitListHeader(context, ref),
                 SizedBox(height: AppDimensions.spacingXs),
                 _buildHabitList(context, ref),
                 SizedBox(height: AppDimensions.bottomScrollPadding),
@@ -248,10 +254,12 @@ class _DashboardTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildDateStrip(BuildContext context) {
+  Widget _buildDateStrip(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final now = DateTime.now();
-    final monthName = DateFormat('MMMM yyyy').format(now);
+    final selectedDate = ref.watch(dashboardSelectedDateProvider);
+    final selectedDateNotifier = ref.read(dashboardSelectedDateProvider.notifier);
+    final monthName = DateFormat('MMMM yyyy').format(selectedDate);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,14 +277,20 @@ class _DashboardTab extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              AppStrings.today,
-              style: TextStyle(
-                color: isDark
-                    ? AppColors.primaryAccent
-                    : AppColors.lightPrimaryAccent,
+            if (DateUtils.isSameDay(selectedDate, now))
+              GestureDetector(
+                onTap: () {
+                  selectedDateNotifier.setDate(DateTime.now());
+                },
+                child: Text(
+                  AppStrings.today,
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.primaryAccent
+                        : AppColors.lightPrimaryAccent,
+                  ),
+                ),
               ),
-            ),
           ],
         ),
         SizedBox(height: AppDimensions.spacingMd),
@@ -287,8 +301,14 @@ class _DashboardTab extends ConsumerWidget {
             itemCount: AppDimensions.daysToShow,
             itemBuilder: (context, index) {
               final date = now.subtract(Duration(days: AppDimensions.dateOffsetDays - index));
-              final isToday = date.day == now.day && date.month == now.month;
-              return DateItem(date: date, isToday: isToday);
+              final isToday = DateUtils.isSameDay(date, now);
+              final isSelected = DateUtils.isSameDay(date, selectedDate);
+              return DateItem(
+                date: date,
+                isToday: isToday,
+                isSelected: isSelected,
+                onTap: () => selectedDateNotifier.setDate(date),
+              );
             },
           ),
         ),
@@ -298,11 +318,12 @@ class _DashboardTab extends ConsumerWidget {
 
   Widget _buildProgressCard(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final now = DateTime.now();
-    
-    final progress = ref.watch(habitCompletionProgressProvider(now));
-    final total = ref.watch(totalHabitsProvider);
-    final completed = ref.watch(completedHabitsCountProvider(now));
+    final selectedDate = ref.watch(dashboardSelectedDateProvider);
+    final habitsForDate = ref.watch(habitsForSelectedDateProvider);
+
+    final total = habitsForDate.length;
+    final completed = habitsForDate.where((h) => h.isCompletedOnDate(selectedDate)).length;
+    final progress = total > 0 ? completed / total : 0.0;
 
     return CustomCard(
       padding: const EdgeInsets.all(AppDimensions.spacingLg),
@@ -325,7 +346,7 @@ class _DashboardTab extends ConsumerWidget {
                 ),
                 SizedBox(height: AppDimensions.spacingXs),
                 Text(
-                  "${(progress * 100).toInt()}%",
+                  "${(progress * AppValues.percentageScale).toInt()}%",
                   style: TextStyle(
                     color: isDark
                         ? AppColors.primaryText
@@ -390,8 +411,31 @@ class _DashboardTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildHabitListHeader(BuildContext context) {
+  Widget _buildFilterChips(WidgetRef ref) {
+    final filter = ref.watch(habitFilterProvider);
+    final filterNotifier = ref.read(habitFilterProvider.notifier);
+    final sortOrder = ref.watch(habitSortOrderProvider);
+    final sortOrderNotifier = ref.read(habitSortOrderProvider.notifier);
+    return Row(
+      children: [
+        FilterChips(
+          filter: filter,
+          onFilterChanged: (f) => filterNotifier.setFilter(f),
+        ),
+        const Spacer(),
+        SortOrderDropdown(
+          sortOrder: sortOrder,
+          onChanged: (order) {
+            if (order != null) sortOrderNotifier.setSortOrder(order);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHabitListHeader(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedDate = ref.watch(dashboardSelectedDateProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -404,7 +448,7 @@ class _DashboardTab extends ConsumerWidget {
           ),
         ),
         Text(
-          DateFormat('MMMM dd').format(DateTime.now()),
+          DateFormat('MMMM dd').format(selectedDate),
           style: TextStyle(
             color: isDark
                 ? AppColors.secondaryText
@@ -418,15 +462,36 @@ class _DashboardTab extends ConsumerWidget {
 
   Widget _buildHabitList(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final habitState = ref.watch(habitProvider);
-    final habits = habitState.habits;
+    final habits = ref.watch(filteredHabitsProvider);
+    final selectedDate = ref.watch(dashboardSelectedDateProvider);
+    final filter = ref.watch(habitFilterProvider);
+    final allHabits = ref.watch(habitProvider).habits;
 
-    if (habits.isEmpty) {
+    if (allHabits.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.only(top: AppDimensions.spacingXxxl),
           child: Text(
             AppStrings.noHabitsYet,
+            style: TextStyle(
+              color: isDark
+                  ? AppColors.secondaryText
+                  : AppColors.lightSecondaryText,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (habits.isEmpty) {
+      final emptyMessage = filter == HabitFilter.ongoing
+          ? AppStrings.noOngoingHabits
+          : AppStrings.noCompletedHabits;
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: AppDimensions.spacingXxxl),
+          child: Text(
+            emptyMessage,
             style: TextStyle(
               color: isDark
                   ? AppColors.secondaryText
@@ -448,7 +513,7 @@ class _DashboardTab extends ConsumerWidget {
         final isCompleted = ref.watch(
             isHabitCompletedProvider(
               habit: habit,
-              date: DateTime.now(),
+              date: selectedDate,
             ),
           );
 
@@ -477,12 +542,13 @@ class _DashboardTab extends ConsumerWidget {
               child: const Icon(Icons.delete_outline, color: Colors.white),
             ),
             child: GestureDetector(
-              onTap: () =>
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.addHabit,
-                    arguments: habit,
-                  ),
+              onTap: isCompleted
+                  ? null
+                  : () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.addHabit,
+                        arguments: habit,
+                      ),
               child: CustomCard(
                 borderRadius: 0,
                 padding: const EdgeInsets.symmetric(
@@ -546,8 +612,23 @@ class _DashboardTab extends ConsumerWidget {
                                   .withValues(alpha: AppDimensions.opacityMd),
                         size: AppDimensions.iconSizeLg,
                       ),
-                      onPressed: () =>
-                          ref.read(habitProvider.notifier).toggleHabit(habit, DateTime.now()),
+                      onPressed: isCompleted
+                          ? null
+                          : () async {
+                              final confirmed = await BaseDialog.show(
+                                context: context,
+                                title: AppStrings.habitCompletedTitle,
+                                message: AppStrings.habitCompletedMessage,
+                                cancelText: AppStrings.cancel,
+                                confirmText: AppStrings.completed,
+                                isDestructive: false,
+                              );
+                              if (context.mounted && confirmed == true) {
+                                ref
+                                    .read(habitProvider.notifier)
+                                    .toggleHabit(habit, selectedDate);
+                              }
+                            },
                     ),
                   ],
                 ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:habits_app/core/constants/app_values.dart';
 import 'package:habits_app/core/errors/habit_not_found_exception.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_repository.dart';
@@ -27,6 +28,7 @@ class FirestoreHabitRepository implements IHabitRepository {
           .map((d) => Timestamp.fromDate(DateTime(d.year, d.month, d.day)))
           .toList(),
       'userId': entity.userId,
+      'selectedWeekdays': entity.selectedWeekdays,
     };
   }
 
@@ -35,16 +37,21 @@ class FirestoreHabitRepository implements IHabitRepository {
             ?.map((e) => (e as Timestamp).toDate())
             .toList() ??
         [];
+    final selectedWeekdaysRaw = map['selectedWeekdays'] as List<dynamic>?;
+    final selectedWeekdays = selectedWeekdaysRaw != null
+        ? selectedWeekdaysRaw.map((e) => (e as num).toInt()).toList()
+        : <int>[];
     return HabitEntity(
       id: id,
       title: map['title'] as String? ?? '',
       description: map['description'] as String? ?? '',
       isCompleted: map['isCompleted'] as bool? ?? false,
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      icon: map['icon'] as String? ?? 'water',
-      color: map['color'] as int? ?? 0xFFA78BFA,
+      icon: map['icon'] as String? ?? AppValues.defaultHabitIcon,
+      color: map['color'] as int? ?? AppValues.defaultHabitColor,
       completionDates: completionDates,
       userId: map['userId'] as String? ?? '',
+      selectedWeekdays: selectedWeekdays,
     );
   }
 
@@ -83,7 +90,14 @@ class FirestoreHabitRepository implements IHabitRepository {
     if (!doc.exists || doc.data() == null) {
       throw HabitNotFoundException(habitId);
     }
-    await docRef.set(_toMap(habit), SetOptions(merge: true));
+    final existing = _fromMap(doc.data()!, doc.id);
+    final entityToWrite = habit.completionDates.isNotEmpty
+        ? habit
+        : habit.copyWith(
+            completionDates: existing.completionDates,
+            isCompleted: existing.completionDates.isNotEmpty,
+          );
+    await docRef.set(_toMap(entityToWrite), SetOptions(merge: true));
   }
 
   @override

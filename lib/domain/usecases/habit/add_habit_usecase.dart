@@ -14,6 +14,7 @@ class AddHabitUseCase {
     required String icon,
     required int color,
     required String userId,
+    List<int> selectedWeekdays = const [],
   }) async {
     final newHabit = HabitEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -23,6 +24,7 @@ class AddHabitUseCase {
       icon: icon,
       color: color,
       userId: userId,
+      selectedWeekdays: selectedWeekdays,
     );
 
     await _habitWriter.addHabit(newHabit);

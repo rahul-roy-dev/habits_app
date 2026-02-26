@@ -9,7 +9,8 @@ class HabitFormState {
   final String icon;
   final int color;
   final String frequency;
-  final List<String> selectedDays;
+  /// Weekdays when habit appears (1=Mon .. 7=Sun). Only used when frequency is Weekly.
+  final List<int> selectedWeekdays;
   final bool remindersEnabled;
 
   HabitFormState({
@@ -17,7 +18,7 @@ class HabitFormState {
     this.icon = AppValues.defaultHabitIcon,
     this.color = AppValues.defaultHabitColor,
     this.frequency = AppValues.defaultFrequency,
-    this.selectedDays = const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    this.selectedWeekdays = AppValues.defaultSelectedWeekdayIndices,
     this.remindersEnabled = true,
   });
 
@@ -26,7 +27,7 @@ class HabitFormState {
     String? icon,
     int? color,
     String? frequency,
-    List<String>? selectedDays,
+    List<int>? selectedWeekdays,
     bool? remindersEnabled,
   }) {
     return HabitFormState(
@@ -34,7 +35,7 @@ class HabitFormState {
       icon: icon ?? this.icon,
       color: color ?? this.color,
       frequency: frequency ?? this.frequency,
-      selectedDays: selectedDays ?? this.selectedDays,
+      selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
       remindersEnabled: remindersEnabled ?? this.remindersEnabled,
     );
   }
@@ -50,7 +51,9 @@ class HabitForm extends _$HabitForm {
         icon: initialHabit.icon,
         color: initialHabit.color,
         frequency: initialHabit.description.split(' ').first,
-        selectedDays: List.from(AppValues.defaultSelectedDays), // Assuming default for now
+        selectedWeekdays: initialHabit.selectedWeekdays.isNotEmpty
+            ? List<int>.from(initialHabit.selectedWeekdays)
+            : AppValues.defaultSelectedWeekdayIndices,
         remindersEnabled: true,
       );
     }
@@ -61,15 +64,17 @@ class HabitForm extends _$HabitForm {
   void updateIcon(String icon) => state = state.copyWith(icon: icon);
   void updateColor(int color) => state = state.copyWith(color: color);
   void updateFrequency(String frequency) => state = state.copyWith(frequency: frequency);
-  
-  void toggleDay(String day) {
-    final newList = List<String>.from(state.selectedDays);
-    if (newList.contains(day)) {
-      newList.remove(day);
+
+  /// Toggle weekday (1=Mon .. 7=Sun). Only relevant when frequency is Weekly.
+  void toggleWeekday(int weekday) {
+    final list = List<int>.from(state.selectedWeekdays);
+    if (list.contains(weekday)) {
+      list.remove(weekday);
     } else {
-      newList.add(day);
+      list.add(weekday);
     }
-    state = state.copyWith(selectedDays: newList);
+    list.sort();
+    state = state.copyWith(selectedWeekdays: list);
   }
 
   void updateReminders(bool enabled) => state = state.copyWith(remindersEnabled: enabled);
