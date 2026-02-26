@@ -30,6 +30,7 @@ class _AuthGateScreenState extends ConsumerState<AuthGateScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (prev, next) {
+      if (!mounted) return;
       if (next.isLoading) return;
       if (next.currentUser != null) _redirectIfNeeded();
     });

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:habits_app/core/errors/habit_not_found_exception.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:habits_app/domain/repositories/habit/i_habit_repository.dart';
 
@@ -77,15 +78,22 @@ class FirestoreHabitRepository implements IHabitRepository {
 
   @override
   Future<void> updateHabit(String habitId, HabitEntity habit) async {
-    await _firestore
-        .collection(_collection)
-        .doc(habitId)
-        .set(_toMap(habit), SetOptions(merge: true));
+    final docRef = _firestore.collection(_collection).doc(habitId);
+    final doc = await docRef.get();
+    if (!doc.exists || doc.data() == null) {
+      throw HabitNotFoundException(habitId);
+    }
+    await docRef.set(_toMap(habit), SetOptions(merge: true));
   }
 
   @override
   Future<void> deleteHabit(HabitEntity habit) async {
-    await _firestore.collection(_collection).doc(habit.id).delete();
+    final docRef = _firestore.collection(_collection).doc(habit.id);
+    final doc = await docRef.get();
+    if (!doc.exists || doc.data() == null) {
+      throw HabitNotFoundException(habit.id);
+    }
+    await docRef.delete();
   }
 
   @override

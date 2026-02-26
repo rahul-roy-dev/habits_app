@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:habits_app/core/errors/habit_not_found_exception.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'dependency_providers.dart';
 import 'auth_provider.dart';
@@ -36,12 +37,13 @@ class Habit extends _$Habit {
       return const HabitState();
     }
 
+    // Listener is scoped to this provider's lifecycle; Riverpod cancels it on dispose.
     ref.listen(authProvider, (_, next) {
       if (next.currentUser != user) {
         if (next.currentUser != null) {
           loadHabits();
         } else {
-          state = const HabitState();
+          _setStateIfActive(const HabitState());
         }
       }
     });
@@ -51,12 +53,20 @@ class Habit extends _$Habit {
     return const HabitState(isLoading: true);
   }
 
+  void _setStateIfActive(HabitState value) {
+    try {
+      state = value;
+    } catch (_) {
+      // Provider may be disposed; ignore late state update.
+    }
+  }
+
   Future<void> _loadInitialHabits(String userId) async {
     try {
       final habits = await ref.read(getHabitsUseCaseProvider).execute(userId);
-      state = state.copyWith(habits: habits, isLoading: false);
+      _setStateIfActive(state.copyWith(habits: habits, isLoading: false));
     } catch (_) {
-      state = state.copyWith(habits: const [], isLoading: false);
+      _setStateIfActive(state.copyWith(habits: const [], isLoading: false));
     }
   }
 
@@ -66,9 +76,9 @@ class Habit extends _$Habit {
 
     try {
       final habits = await ref.read(getHabitsUseCaseProvider).execute(user.id);
-      state = state.copyWith(habits: habits, isLoading: false);
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
+      _setStateIfActive(state.copyWith(habits: habits, isLoading: false));
+    } catch (_) {
+      _setStateIfActive(state.copyWith(isLoading: false));
     }
   }
 
@@ -92,7 +102,10 @@ class Habit extends _$Habit {
   }
 
   Future<void> updateHabit(String habitId, HabitEntity habit) async {
-    await ref.read(updateHabitUseCaseProvider).execute(habitId, habit);
+    try {
+      await ref.read(updateHabitUseCaseProvider).execute(habitId, habit);
+    } on HabitNotFoundException catch (_) {
+    }
     await loadHabits();
   }
 
@@ -102,7 +115,10 @@ class Habit extends _$Habit {
   }
 
   Future<void> deleteHabit(HabitEntity habit) async {
-    await ref.read(deleteHabitUseCaseProvider).execute(habit);
+    try {
+      await ref.read(deleteHabitUseCaseProvider).execute(habit);
+    } on HabitNotFoundException catch (_) {
+    }
     await loadHabits();
   }
 }
