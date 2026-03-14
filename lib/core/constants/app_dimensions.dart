@@ -173,4 +173,26 @@ class AppDimensions {
 
   // Form Padding
   static const double formContentSpacing = 200.0;
+
+  // Reminder overlay (habit_reminder_page)
+  static const double reminderTitleFontSize = 40.0;
+  static const double reminderDescriptionFontSize = 18.0;
+  static const double reminderHorizontalPadding = 30.0;
+  static const double reminderContentPadding = 30.0;
+  static const double reminderButtonHeight = 70.0;
+  static const double reminderButtonBorderRadius = 20.0;
+  static const double reminderButtonElevation = 10.0;
+  static const double reminderIconContainerPadding = 30.0;
+  static const double reminderIconSize = 100.0;
+  static const double reminderIconShadowBlur = 30.0;
+  static const double reminderIconShadowSpread = 10.0;
+  static const int reminderPulseAnimationDurationSeconds = 2;
+  static const double reminderDescriptionOpacity = 0.8;
+  static const double reminderDismissTextOpacity = 0.7;
+  static const double reminderIconBgOpacity = 0.2;
+  static const double reminderIconShadowOpacity = 0.5;
+
+  // Add habit / forms
+  static const int snackBarFullScreenIntentDurationSeconds = 6;
+  static const double alertTimeFieldWidth = 52.0;
 }

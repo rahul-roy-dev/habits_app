@@ -12,6 +12,8 @@ class HabitFormState {
   /// Weekdays when habit appears (1=Mon .. 7=Sun). Only used when frequency is Weekly.
   final List<int> selectedWeekdays;
   final bool remindersEnabled;
+  final int? alertHour;
+  final int? alertMinute;
 
   HabitFormState({
     this.name = '',
@@ -20,6 +22,8 @@ class HabitFormState {
     this.frequency = AppValues.defaultFrequency,
     this.selectedWeekdays = AppValues.defaultSelectedWeekdayIndices,
     this.remindersEnabled = true,
+    this.alertHour,
+    this.alertMinute,
   });
 
   HabitFormState copyWith({
@@ -29,6 +33,9 @@ class HabitFormState {
     String? frequency,
     List<int>? selectedWeekdays,
     bool? remindersEnabled,
+    int? alertHour,
+    int? alertMinute,
+    bool clearAlertTime = false,
   }) {
     return HabitFormState(
       name: name ?? this.name,
@@ -37,6 +44,8 @@ class HabitFormState {
       frequency: frequency ?? this.frequency,
       selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
       remindersEnabled: remindersEnabled ?? this.remindersEnabled,
+      alertHour: clearAlertTime ? null : (alertHour ?? this.alertHour),
+      alertMinute: clearAlertTime ? null : (alertMinute ?? this.alertMinute),
     );
   }
 }
@@ -54,7 +63,9 @@ class HabitForm extends _$HabitForm {
         selectedWeekdays: initialHabit.selectedWeekdays.isNotEmpty
             ? List<int>.from(initialHabit.selectedWeekdays)
             : AppValues.defaultSelectedWeekdayIndices,
-        remindersEnabled: true,
+        remindersEnabled: initialHabit.alertHour != null,
+        alertHour: initialHabit.alertHour,
+        alertMinute: initialHabit.alertMinute,
       );
     }
     return HabitFormState();
@@ -77,5 +88,19 @@ class HabitForm extends _$HabitForm {
     state = state.copyWith(selectedWeekdays: list);
   }
 
-  void updateReminders(bool enabled) => state = state.copyWith(remindersEnabled: enabled);
+  void updateReminders(bool enabled) {
+    if (!enabled) {
+      state = state.copyWith(remindersEnabled: enabled, clearAlertTime: true);
+    } else {
+      state = state.copyWith(remindersEnabled: enabled);
+    }
+  }
+
+  void updateAlertTime(int hour, int minute) {
+    state = state.copyWith(alertHour: hour, alertMinute: minute, remindersEnabled: true);
+  }
+
+  void clearAlertTime() {
+    state = state.copyWith(clearAlertTime: true, remindersEnabled: false);
+  }
 }

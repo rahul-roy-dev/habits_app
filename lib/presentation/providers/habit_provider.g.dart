@@ -40,7 +40,7 @@ final class HabitProvider extends $NotifierProvider<Habit, HabitState> {
   }
 }
 
-String _$habitHash() => r'8671499ff4d5179e2f4673a17b12555d78701298';
+String _$habitHash() => r'0752f9fd0bc5ce258a84082a29da9a94144b3891';
 
 abstract class _$Habit extends $Notifier<HabitState> {
   HabitState build();
@@ -338,4 +338,81 @@ final class CompletedHabitsCountFamily extends $Family
 
   @override
   String toString() => r'completedHabitsCountProvider';
+}
+
+@ProviderFor(habitById)
+const habitByIdProvider = HabitByIdFamily._();
+
+final class HabitByIdProvider
+    extends $FunctionalProvider<HabitEntity?, HabitEntity?, HabitEntity?>
+    with $Provider<HabitEntity?> {
+  const HabitByIdProvider._({
+    required HabitByIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'habitByIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$habitByIdHash();
+
+  @override
+  String toString() {
+    return r'habitByIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<HabitEntity?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  HabitEntity? create(Ref ref) {
+    final argument = this.argument as String;
+    return habitById(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HabitEntity? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HabitEntity?>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HabitByIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$habitByIdHash() => r'b96ffbdcaeaea94a647c1e79ffca528a1db61a76';
+
+final class HabitByIdFamily extends $Family
+    with $FunctionalFamilyOverride<HabitEntity?, String> {
+  const HabitByIdFamily._()
+    : super(
+        retry: null,
+        name: r'habitByIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  HabitByIdProvider call(String id) =>
+      HabitByIdProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'habitByIdProvider';
 }

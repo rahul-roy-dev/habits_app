@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/services/notification_service.dart';
 import 'package:habits_app/presentation/widgets/common/custom_button.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 import 'package:habits_app/presentation/widgets/common/custom_input.dart';
@@ -53,6 +54,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         ? formState.selectedWeekdays
         : <int>[];
 
+    if (formState.remindersEnabled && formState.alertHour != null) {
+      await NotificationService().requestPermission();
+    }
+
     if (widget.habit != null) {
       final existing = widget.habit!;
       final updatedHabit = existing.copyWith(
@@ -61,6 +66,9 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         icon: formState.icon,
         color: formState.color,
         selectedWeekdays: selectedWeekdays,
+        alertHour: formState.remindersEnabled ? formState.alertHour : null,
+        alertMinute: formState.remindersEnabled ? formState.alertMinute : null,
+        clearAlertTime: !formState.remindersEnabled,
       );
       await ref.read(habitProvider.notifier).updateHabit(widget.habit!.id, updatedHabit);
     } else {
@@ -72,10 +80,29 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
           formState.icon,
           formState.color,
           selectedWeekdays: selectedWeekdays,
+          alertHour: formState.remindersEnabled ? formState.alertHour : null,
+          alertMinute: formState.remindersEnabled ? formState.alertMinute : null,
         );
       }
     }
     if (mounted) Navigator.pop(context);
+  }
+
+  void _showFullScreenIntentPrompt(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'To show reminders when the screen is off, allow full-screen intents in Settings.',
+        ),
+        action: SnackBarAction(
+          label: 'Settings',
+          onPressed: () => NotificationService.openFullScreenIntentSettings(),
+        ),
+        duration: const Duration(
+          seconds: AppDimensions.snackBarFullScreenIntentDurationSeconds,
+        ),
+      ),
+    );
   }
 
   @override
@@ -85,7 +112,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     final formNotifier = ref.read(habitFormProvider(widget.habit).notifier);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -112,7 +139,12 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomInput(
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomInput(
                 label: AppStrings.habitName,
                 hint: AppStrings.habitNameHint,
                 controller: _nameController,
@@ -286,34 +318,117 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   horizontal: AppDimensions.spacingMd,
                   vertical: AppDimensions.spacingXs,
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(
-                      Icons.notifications_none,
-                      color: isDark
-                          ? AppColors.secondaryText
-                          : AppColors.lightSecondaryText,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.notifications_none,
+                          color: isDark
+                              ? AppColors.secondaryText
+                              : AppColors.lightSecondaryText,
+                        ),
+                        SizedBox(width: AppDimensions.spacingSm),
+                        Text(
+                          AppStrings.reminders,
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.primaryText
+                                : AppColors.lightPrimaryText,
+                            fontSize: AppDimensions.fontSizeXl,
+                          ),
+                        ),
+                        const Spacer(),
+                        Switch(
+                          value: formState.remindersEnabled,
+                          onChanged: (value) {
+                            formNotifier.updateReminders(value);
+                            if (value && context.mounted && Theme.of(context).platform == TargetPlatform.android) {
+                              _showFullScreenIntentPrompt(context);
+                            }
+                          },
+                          activeTrackColor: AppColors.primaryAccent,
+                        ),
+                      ],
                     ),
-                    SizedBox(width: AppDimensions.spacingSm),
-                    Text(
-                      AppStrings.reminders,
-                      style: TextStyle(
-                        color: isDark
-                            ? AppColors.primaryText
-                            : AppColors.lightPrimaryText,
-                        fontSize: AppDimensions.fontSizeXl,
+                    if (formState.remindersEnabled) ...[
+                      const SizedBox(height: AppDimensions.spacingMd),
+                      GestureDetector(
+                        onTap: () async {
+                          final time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay(
+                              hour: formState.alertHour ?? 9,
+                              minute: formState.alertMinute ?? 0,
+                            ),
+                          );
+                          if (time != null) {
+                            formNotifier.updateAlertTime(time.hour, time.minute);
+                          }
+                        },
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppDimensions.spacingSm,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isDark ? AppColors.surface : AppColors.lightSurface,
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                            ),
+                            child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.clock,
+                                color: isDark
+                                    ? AppColors.secondaryText
+                                    : AppColors.lightSecondaryText,
+                              ),
+                              SizedBox(width: AppDimensions.spacingSm),
+                              Text(
+                                AppStrings.alertTime,
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppColors.primaryText
+                                      : AppColors.lightPrimaryText,
+                                  fontSize: AppDimensions.fontSizeXl,
+                                ),
+                              ),
+                              const Spacer(),
+                              SizedBox(
+                                width: AppDimensions.alertTimeFieldWidth,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    formState.alertHour != null
+                                        ? '${formState.alertHour!.toString().padLeft(2, '0')}:${formState.alertMinute!.toString().padLeft(2, '0')}'
+                                        : '--:--',
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? AppColors.primaryText
+                                          : AppColors.lightPrimaryText,
+                                      fontSize: AppDimensions.fontSizeXl,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          ),
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    Switch(
-                      value: formState.remindersEnabled,
-                      onChanged: formNotifier.updateReminders,
-                      activeTrackColor: AppColors.primaryAccent,
-                    ),
+                    ],
                   ],
                 ),
               ),
-              SizedBox(height: AppDimensions.spacingXxl),
+                      SizedBox(height: AppDimensions.spacingXxl),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppDimensions.spacingMd),
               CustomButton(
                 text: widget.habit != null ? AppStrings.updateHabit : AppStrings.saveHabit,
                 onPressed: _handleSave,

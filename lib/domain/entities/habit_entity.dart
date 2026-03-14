@@ -11,6 +11,8 @@ class HabitEntity {
   final List<DateTime> completionDates;
   final String userId;
   final List<int> selectedWeekdays;
+  final int? alertHour;
+  final int? alertMinute;
 
   const HabitEntity({
     required this.id,
@@ -23,9 +25,10 @@ class HabitEntity {
     this.completionDates = const [],
     required this.userId,
     this.selectedWeekdays = const [],
+    this.alertHour,
+    this.alertMinute,
   });
 
-  /// Normalizes to date-only (no time) for consistent comparison.
   static DateTime normalizeDate(DateTime d) {
     return DateTime(d.year, d.month, d.day);
   }
@@ -58,6 +61,9 @@ class HabitEntity {
     List<DateTime>? completionDates,
     String? userId,
     List<int>? selectedWeekdays,
+    int? alertHour,
+    int? alertMinute,
+    bool clearAlertTime = false,
   }) {
     return HabitEntity(
       id: id ?? this.id,
@@ -70,6 +76,8 @@ class HabitEntity {
       completionDates: completionDates ?? this.completionDates,
       userId: userId ?? this.userId,
       selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
+      alertHour: clearAlertTime ? null : (alertHour ?? this.alertHour),
+      alertMinute: clearAlertTime ? null : (alertMinute ?? this.alertMinute),
     );
   }
 
@@ -87,7 +95,9 @@ class HabitEntity {
           color == other.color &&
           completionDates == other.completionDates &&
           userId == other.userId &&
-          selectedWeekdays == other.selectedWeekdays;
+          selectedWeekdays == other.selectedWeekdays &&
+          alertHour == other.alertHour &&
+          alertMinute == other.alertMinute;
 
   @override
   int get hashCode => Object.hash(
@@ -101,5 +111,7 @@ class HabitEntity {
         completionDates,
         userId,
         Object.hashAll(selectedWeekdays),
+        alertHour,
+        alertMinute,
       );
 }

@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:habits_app/core/errors/habit_not_found_exception.dart';
+import 'package:habits_app/core/services/notification_service.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'dependency_providers.dart';
 import 'auth_provider.dart';
@@ -56,6 +57,8 @@ class Habit extends _$Habit {
   void _setStateIfActive(HabitState value) {
     try {
       state = value;
+      // Also update monitored habits in notification service for foreground checks
+      NotificationService().updateMonitoredHabits(value.habits);
     } catch (_) {
       // Provider may be disposed; ignore late state update.
     }
@@ -88,6 +91,8 @@ class Habit extends _$Habit {
     String icon,
     int color, {
     List<int> selectedWeekdays = const [],
+    int? alertHour,
+    int? alertMinute,
   }) async {
     final user = ref.read(authProvider).currentUser;
     if (user == null) return;
@@ -99,13 +104,32 @@ class Habit extends _$Habit {
       color: color,
       userId: user.id,
       selectedWeekdays: selectedWeekdays,
+      alertHour: alertHour,
+      alertMinute: alertMinute,
     );
     await loadHabits();
+
+    // Schedule notification if alert time is set
+    if (alertHour != null && alertMinute != null) {
+      final habits = state.habits;
+      final newHabit = habits.firstWhere(
+        (h) => h.title == title && h.alertHour == alertHour && h.alertMinute == alertMinute,
+        orElse: () => habits.last,
+      );
+      await NotificationService().scheduleHabitReminder(newHabit);
+    }
   }
 
   Future<void> updateHabit(String habitId, HabitEntity habit) async {
     try {
       await ref.read(updateHabitUseCaseProvider).execute(habitId, habit);
+
+      await NotificationService().clearReminderAcknowledgementsForHabit(habit.id);
+      if (habit.alertHour != null && habit.alertMinute != null) {
+        await NotificationService().scheduleHabitReminder(habit);
+      } else {
+        await NotificationService().cancelHabitReminder(habit.id);
+      }
     } on HabitNotFoundException catch (_) {
     }
     await loadHabits();
@@ -119,6 +143,7 @@ class Habit extends _$Habit {
   Future<void> deleteHabit(HabitEntity habit) async {
     try {
       await ref.read(deleteHabitUseCaseProvider).execute(habit);
+      await NotificationService().cancelHabitReminder(habit.id);
     } on HabitNotFoundException catch (_) {
     }
     await loadHabits();
@@ -147,4 +172,14 @@ bool isHabitCompleted(Ref ref, {required HabitEntity habit, required DateTime da
 int completedHabitsCount(Ref ref, DateTime date) {
   final habits = ref.watch(habitProvider).habits;
   return habits.where((h) => h.isCompletedOnDate(date)).length;
+}
+
+@riverpod
+HabitEntity? habitById(Ref ref, String id) {
+  final habits = ref.watch(habitProvider).habits;
+  try {
+    return habits.firstWhere((h) => h.id == id);
+  } catch (_) {
+    return null;
+  }
 }

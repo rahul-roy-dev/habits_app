@@ -10,6 +10,7 @@ class AppValues {
 
   // Preferences Keys (e.g. SharedPreferences)
   static const String isDarkThemeKey = 'is_dark';
+  static const String reminderAckKeyPrefix = 'reminder_ack_';
 
   // Display
   static const int percentageScale = 100;
@@ -56,4 +57,26 @@ class AppValues {
 
   // Default Frequency
   static const String defaultFrequency = 'Daily';
+
+  // Reminder / notification timing (Clean Architecture: single source of truth)
+  /// Interval (seconds) for checking if we should show in-app overlay when app is in foreground.
+  static const int foregroundReminderCheckIntervalSeconds = 30;
+  /// Delay (seconds) before retrying notification-tap handling when habit list was not loaded yet.
+  static const int notificationTapRetryDelaySeconds = 2;
+  /// Delay (ms) after app resume before handling launch-from-notification (lets navigator be ready).
+  static const int launchDetailsDelayMs = 400;
+  /// Max duration (minutes) the reminder ringtone plays before auto-stop.
+  static const int reminderRingtoneMaxDurationMinutes = 1;
+  /// Delay (ms) before starting ringtone after overlay is shown (e.g. for screen-off launch).
+  static const int reminderRingtoneStartDelayMs = 600;
+  /// Delay (ms) before retrying ringtone play if first attempt failed.
+  static const int reminderRingtoneRetryDelayMs = 800;
+
+  // Slot key / date formatting
+  /// Number of digits for month, day, hour, minute in reminder slot key (padLeft).
+  static const int slotKeyPadWidth = 2;
+  /// Weekday range for scheduling: first weekday index (1 = Monday).
+  static const int weekdayFirst = 1;
+  /// Weekday range: last weekday index (7 = Sunday). Use with [daysInWeek].
+  static const int weekdayLast = 7;
 }

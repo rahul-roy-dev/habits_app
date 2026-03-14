@@ -7,6 +7,7 @@ import 'package:habits_app/presentation/pages/habits/add_habit_screen.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:habits_app/presentation/pages/profile/profile_screen.dart';
 import 'package:habits_app/presentation/pages/profile/account_settings_screen.dart';
+import 'package:habits_app/presentation/pages/habits/habit_reminder_page.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -16,6 +17,7 @@ class AppRoutes {
   static const String editHabit = '/edit-habit';
   static const String profile = '/profile';
   static const String accountSettings = '/account-settings';
+  static const String habitReminder = '/habit-reminder';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -36,6 +38,20 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case accountSettings:
         return MaterialPageRoute(builder: (_) => const AccountSettingsScreen());
+      case habitReminder:
+        final args = settings.arguments;
+        final habitId = args is Map
+            ? args['habitId'] as String?
+            : args as String?;
+        final reminderSlotKey =
+            args is Map ? args['reminderSlotKey'] as String? : null;
+        return MaterialPageRoute(
+          builder: (_) => HabitReminderPage(
+            habitId: habitId ?? '',
+            reminderSlotKey: reminderSlotKey,
+          ),
+          fullscreenDialog: true,
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

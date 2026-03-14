@@ -59,6 +59,7 @@ class AppStrings {
   static const String categorizationColor = 'CATEGORIZATION COLOR';
   static const String frequency = 'FREQUENCY';
   static const String reminders = 'Reminders';
+  static const String alertTime = 'Alert Time';
   static const String saveHabit = 'Save Habit';
   static const String updateHabit = 'Update Habit';
 

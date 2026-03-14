@@ -29,6 +29,8 @@ class FirestoreHabitRepository implements IHabitRepository {
           .toList(),
       'userId': entity.userId,
       'selectedWeekdays': entity.selectedWeekdays,
+      'alertHour': entity.alertHour,
+      'alertMinute': entity.alertMinute,
     };
   }
 
@@ -52,6 +54,8 @@ class FirestoreHabitRepository implements IHabitRepository {
       completionDates: completionDates,
       userId: map['userId'] as String? ?? '',
       selectedWeekdays: selectedWeekdays,
+      alertHour: map['alertHour'] as int?,
+      alertMinute: map['alertMinute'] as int?,
     );
   }
 
