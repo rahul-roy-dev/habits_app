@@ -140,7 +140,7 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(habit.color).withOpacity(0.8),
+                  Color(habit.color).withValues(alpha: AppDimensions.opacityHigh),
                   Color(habit.color),
                   Colors.black.withOpacity(0.9),
                 ],
@@ -207,7 +207,6 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
                               }
                               await ref.read(habitProvider.notifier).toggleHabit(habit, DateTime.now());
                             } finally {
-                              // Re-schedule so the next occurrence still fires
                               await NotificationService().scheduleHabitReminder(habit);
                               if (context.mounted) Navigator.of(context).pop();
                             }

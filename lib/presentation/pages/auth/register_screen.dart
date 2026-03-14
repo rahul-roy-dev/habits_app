@@ -161,7 +161,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         Theme.of(context).scaffoldBackgroundColor.withValues(alpha: AppDimensions.opacityXxs),
                         Theme.of(context).scaffoldBackgroundColor,
                       ],
-                      stops: const [0.0, 0.3],
+                      stops: AppDimensions.registerGradientStops,
                     ),
                   ),
                 child: Column(

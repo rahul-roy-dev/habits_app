@@ -6,7 +6,7 @@ import 'package:habits_app/presentation/routes/app_routes.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/widgets/common/profile_menu_item.dart';
 import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 
 class AccountSettingsScreen extends ConsumerWidget {
   const AccountSettingsScreen({super.key});
@@ -24,7 +24,7 @@ class AccountSettingsScreen extends ConsumerWidget {
         leading: Padding(
            padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
           child: CustomIconButton(
-            icon: LucideIcons.chevronLeft,
+            icon: LucideIcons.chevron_left,
             onPressed: () => Navigator.pop(context),
             isActive: false,
           ),

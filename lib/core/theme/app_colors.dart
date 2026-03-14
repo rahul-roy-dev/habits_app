@@ -9,7 +9,7 @@ class AppColors {
   static const primaryText = Color(0xFFF8FAFC);
   static const secondaryText = Color(0xFF94A3B8);
 
-  static const lightBackground = Color(0xFFF5F7FA);
+  static const lightBackground = Color(0xFFF3F4F4);
   static const lightSurface = Color(0xFFFFFFFF);
   static const lightPrimaryAccent = Color(0xFFA78BFA);
   static const lightSuccess = Color(0xFF10B981);

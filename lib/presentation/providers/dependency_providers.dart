@@ -15,6 +15,7 @@ import 'package:habits_app/domain/usecases/habit/update_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/delete_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/toggle_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/get_habit_stats_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/get_statistics_usecase.dart';
 
 // Repositories needed for ViewModel logic
 import 'package:habits_app/domain/repositories/auth/i_user_manager.dart';
@@ -56,3 +57,6 @@ ToggleHabitUseCase toggleHabitUseCase(Ref ref) => sl<ToggleHabitUseCase>();
 
 @riverpod
 GetHabitStatsUseCase getHabitStatsUseCase(Ref ref) => sl<GetHabitStatsUseCase>();
+
+@riverpod
+GetStatisticsUseCase getStatisticsUseCase(Ref ref) => sl<GetStatisticsUseCase>();

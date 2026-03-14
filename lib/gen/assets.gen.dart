@@ -22,8 +22,19 @@ class $AssetsIconsGen {
   List<String> get values => [appleIcon, googleIcon];
 }
 
+class $AssetsSoundsGen {
+  const $AssetsSoundsGen();
+
+  /// File path: assets/sounds/soar_binaural_beat.mp3
+  String get soarBinauralBeat => 'assets/sounds/soar_binaural_beat.mp3';
+
+  /// List of all assets
+  List<String> get values => [soarBinauralBeat];
+}
+
 class Assets {
   const Assets._();
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
+  static const $AssetsSoundsGen sounds = $AssetsSoundsGen();
 }

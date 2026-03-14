@@ -131,6 +131,14 @@ class AppDimensions {
   static const double chartBarWidth = 20.0;
   static const double chartBarRadius = 6.0;
   static const double chartHeight = 150.0;
+  static const int chartBarMinValue = 12;
+  /// Label row height for consistency chart (weekday/month labels below bars).
+  static const double consistencyChartLabelRowHeight = 14.0;
+  /// Total height of consistency chart content (bars + spacing + label row). Use same for Week and Month so card bottom padding is identical.
+  static const double consistencyChartContentHeight = chartHeight + spacingMd + consistencyChartLabelRowHeight;
+  static const double chartBarOpacityLow = 0.55;
+  static const double heatmapOpacityMin = 0.25;
+  static const double heatmapOpacityMax = 1.0;
 
   // Streak Card
   static const double streakCardWidth = 140.0;
@@ -195,4 +203,37 @@ class AppDimensions {
   // Add habit / forms
   static const int snackBarFullScreenIntentDurationSeconds = 6;
   static const double alertTimeFieldWidth = 52.0;
+
+  // Icon picker (bottom sheet)
+  static const double iconPickerInitialChildSize = 0.75;
+  static const double iconPickerMinChildSize = 0.4;
+  static const double iconPickerMaxChildSize = 0.95;
+  static const List<double> iconPickerSnapSizes = [0.5, 0.75, 0.95];
+  static const double iconPickerSheetBorderRadius = 20.0;
+  static const double iconPickerHandleWidth = 36.0;
+  static const double iconPickerHandleHeight = 4.0;
+  static const double iconPickerHandleBorderRadius = 2.0;
+  static const double iconPickerHandleOpacity = 0.15;
+  static const double iconPickerPrefixIconOpacity = 0.4;
+  static const double iconPickerFillOpacity = 0.06;
+  static const double iconPickerEmptyOpacity = 0.2;
+  static const double iconPickerHintOpacity = 0.35;
+  static const double iconPickerBorderOpacity = 0.08;
+  static const double iconPickerIconOpacity = 0.55;
+  static const double iconPickerSelectedBorderWidth = 1.5;
+  static const double iconPickerUnselectedBorderWidth = 0.5;
+  static const double iconPickerSearchIconSize = 18.0;
+  static const double iconPickerClearIconSize = 16.0;
+  static const double iconPickerEmptyStateIconSize = 32.0;
+  static const double iconPickerSearchContentPaddingH = 14.0;
+  static const double iconPickerSearchContentPaddingV = 10.0;
+  static const double iconPickerGridSpacing = 6.0;
+  static const double iconPickerGridItemRadius = 10.0;
+  static const double iconPickerGridIconSize = 20.0;
+  static const double iconPickerSelectedBgOpacity = 0.12;
+  static const int iconPickerTooltipWaitMs = 600;
+  static const int iconPickerSelectionAnimationMs = 120;
+
+  // Register screen gradient
+  static const List<double> registerGradientStops = [0.0, 0.3];
 }

@@ -549,3 +549,51 @@ final class GetHabitStatsUseCaseProvider
 
 String _$getHabitStatsUseCaseHash() =>
     r'b6a307ae715653b9df8245fe1e13a7684fcaf910';
+
+@ProviderFor(getStatisticsUseCase)
+const getStatisticsUseCaseProvider = GetStatisticsUseCaseProvider._();
+
+final class GetStatisticsUseCaseProvider
+    extends
+        $FunctionalProvider<
+          GetStatisticsUseCase,
+          GetStatisticsUseCase,
+          GetStatisticsUseCase
+        >
+    with $Provider<GetStatisticsUseCase> {
+  const GetStatisticsUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getStatisticsUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getStatisticsUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetStatisticsUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  GetStatisticsUseCase create(Ref ref) {
+    return getStatisticsUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetStatisticsUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetStatisticsUseCase>(value),
+    );
+  }
+}
+
+String _$getStatisticsUseCaseHash() =>
+    r'f8aa850a06cd28dba530e23eee98d76d7e1ba69c';

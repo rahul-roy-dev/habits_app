@@ -8,10 +8,11 @@ import 'package:habits_app/presentation/widgets/common/custom_input.dart';
 import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
 import 'package:habits_app/presentation/widgets/common/frequency_toggle.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:habits_app/presentation/providers/habit_provider.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/providers/habit_form_provider.dart';
+import 'package:habits_app/presentation/widgets/common/icon_picker.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
@@ -39,6 +40,20 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
             'icon': entry.value,
           })
       .toList();
+
+  Future<void> _openIconPicker(WidgetRef ref) async {
+    final formState = ref.read(habitFormProvider(widget.habit));
+    final formNotifier = ref.read(habitFormProvider(widget.habit).notifier);
+    
+    final result = await showIconPicker(
+      context,
+      initialIcon: AppValues.getIconData(formState.icon),
+    );
+
+    if (result != null) {
+      formNotifier.updateIcon(result.name);
+    }
+  }
 
   @override
   void dispose() {
@@ -88,23 +103,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     if (mounted) Navigator.pop(context);
   }
 
-  void _showFullScreenIntentPrompt(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'To show reminders when the screen is off, allow full-screen intents in Settings.',
-        ),
-        action: SnackBarAction(
-          label: 'Settings',
-          onPressed: () => NotificationService.openFullScreenIntentSettings(),
-        ),
-        duration: const Duration(
-          seconds: AppDimensions.snackBarFullScreenIntentDurationSeconds,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -119,7 +117,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
         leading: Padding(
           padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
           child: CustomIconButton(
-            icon: LucideIcons.chevronLeft,
+            icon: LucideIcons.chevron_left,
             onPressed: () => Navigator.pop(context),
             isActive: false,
           ),
@@ -171,31 +169,41 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                   crossAxisSpacing: AppDimensions.spacingSm,
                 ),
                 itemCount: _icons.length,
-                itemBuilder: (context, index) {
-                  final item = _icons[index];
-                  final isSelected = formState.icon == item['name'];
-                  return GestureDetector(
-                    onTap: () => formNotifier.updateIcon(item['name']),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primaryAccent
-                            : (isDark
-                                  ? AppColors.surface
-                                  : AppColors.lightSurface),
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                  itemBuilder: (context, index) {
+                    final item = _icons[index];
+                    final isSelected = formState.icon == item['name'];
+                    final isMoreIcon = item['name'] == 'ellipsis';
+                    final isOtherSelected = isMoreIcon && !AppValues.habitIconMap.containsKey(formState.icon);
+                    final effectiveSelected = isSelected || isOtherSelected;
+
+                    return GestureDetector(
+                      onTap: () {
+                        if (isMoreIcon) {
+                          _openIconPicker(ref);
+                        } else {
+                          formNotifier.updateIcon(item['name']);
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: effectiveSelected
+                              ? AppColors.primaryAccent
+                              : (isDark
+                                    ? AppColors.surface
+                                    : AppColors.lightSurface),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                        ),
+                        child: Icon(
+                          effectiveSelected ? AppValues.getIconData(formState.icon) : item['icon'],
+                          color: effectiveSelected
+                              ? AppColors.white
+                              : (isDark
+                                    ? AppColors.secondaryText
+                                    : AppColors.lightSecondaryText),
+                        ),
                       ),
-                      child: Icon(
-                        item['icon'],
-                        color: isSelected
-                            ? AppColors.white
-                            : (isDark
-                                  ? AppColors.secondaryText
-                                  : AppColors.lightSecondaryText),
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
               ),
               SizedBox(height: AppDimensions.spacingXxl),
               Text(
@@ -342,12 +350,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                         const Spacer(),
                         Switch(
                           value: formState.remindersEnabled,
-                          onChanged: (value) {
-                            formNotifier.updateReminders(value);
-                            if (value && context.mounted && Theme.of(context).platform == TargetPlatform.android) {
-                              _showFullScreenIntentPrompt(context);
-                            }
-                          },
+                          onChanged: (value) => formNotifier.updateReminders(value),
                           activeTrackColor: AppColors.primaryAccent,
                         ),
                       ],
@@ -405,11 +408,11 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                                         ? '${formState.alertHour!.toString().padLeft(2, '0')}:${formState.alertMinute!.toString().padLeft(2, '0')}'
                                         : '--:--',
                                     style: TextStyle(
+                                      fontSize: AppDimensions.fontSizeXl,
+                                      fontWeight: FontWeight.bold,
                                       color: isDark
                                           ? AppColors.primaryText
                                           : AppColors.lightPrimaryText,
-                                      fontSize: AppDimensions.fontSizeXl,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),

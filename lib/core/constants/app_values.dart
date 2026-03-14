@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:habits_app/core/constants/lucide_icons_list.dart';
 
 class AppValues {
   AppValues._();
 
   // Default Values
   static const int defaultHabitColor = 0xFFA78BFA;
-  static const String defaultHabitIcon = 'water';
+  static const String defaultHabitIcon = 'droplets';
   static const String defaultHabitDescription = '';
 
   // Preferences Keys (e.g. SharedPreferences)
@@ -39,15 +41,32 @@ class AppValues {
   ];
 
   // Habit Icons Map
-  static const Map<String, IconData> habitIconMap = {
-    'workout': Icons.fitness_center,
-    'water': Icons.local_drink,
-    'book': Icons.menu_book,
-    'meditation': Icons.self_improvement,
-    'food': Icons.restaurant,
-    'sleep': Icons.nightlight_round,
-    'code': Icons.code,
-    'other': Icons.more_horiz,
+  static final Map<String, IconData> habitIconMap = {
+    'dumbbell': LucideIcons.dumbbell,
+    'droplets': LucideIcons.droplets,
+    'bookOpen': LucideIcons.book_open,
+    'hand': LucideIcons.hand, 
+    'utensils': LucideIcons.utensils,
+    'moon': LucideIcons.moon,
+    'code': LucideIcons.code,
+    'ellipsis': LucideIcons.ellipsis,
+  };
+
+  /// Centralized icon resolution. Resolves from habitIconMap, then full Lucide set.
+  static IconData getIconData(String name) {
+    return habitIconMap[name] ?? lucideIconsMap[name] ?? Icons.help_outline;
+  }
+
+  /// Display names for habit icons (category labels on Statistics Top Streaks).
+  static const Map<String, String> habitIconDisplayNames = {
+    'dumbbell': 'Workout',
+    'droplets': 'Hydration',
+    'book-open': 'Reading',
+    'peace': 'Meditation',
+    'utensils': 'Nutrition',
+    'moon': 'Sleep',
+    'code': 'Code',
+    'more-horizontal': 'Other',
   };
 
 

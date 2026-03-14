@@ -1,5 +1,4 @@
-import 'package:habits_app/core/constants/app_values.dart';
-
+/// Domain entity for a habit. Defaults are kept in sync with [AppValues] in core.
 class HabitEntity {
   final String id;
   final String title;
@@ -14,14 +13,18 @@ class HabitEntity {
   final int? alertHour;
   final int? alertMinute;
 
+  static const String _defaultDescription = '';
+  static const String _defaultIcon = 'droplets';
+  static const int _defaultColor = 0xFFA78BFA;
+
   const HabitEntity({
     required this.id,
     required this.title,
-    this.description = AppValues.defaultHabitDescription,
+    this.description = _defaultDescription,
     this.isCompleted = false,
     required this.createdAt,
-    this.icon = AppValues.defaultHabitIcon,
-    this.color = AppValues.defaultHabitColor,
+    this.icon = _defaultIcon,
+    this.color = _defaultColor,
     this.completionDates = const [],
     required this.userId,
     this.selectedWeekdays = const [],

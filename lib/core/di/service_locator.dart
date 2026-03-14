@@ -26,6 +26,7 @@ import 'package:habits_app/domain/usecases/habit/update_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/delete_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/toggle_habit_usecase.dart';
 import 'package:habits_app/domain/usecases/habit/get_habit_stats_usecase.dart';
+import 'package:habits_app/domain/usecases/habit/get_statistics_usecase.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -84,5 +85,8 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<GetHabitStatsUseCase>(
     () => GetHabitStatsUseCase(sl<IHabitReader>()),
+  );
+  sl.registerLazySingleton<GetStatisticsUseCase>(
+    () => GetStatisticsUseCase(),
   );
 }

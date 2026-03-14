@@ -9,7 +9,7 @@ import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/providers/theme_provider.dart';
 import 'package:habits_app/presentation/widgets/common/profile_menu_item.dart';
 import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -30,7 +30,7 @@ class ProfileScreen extends ConsumerWidget {
         leading: Padding(
            padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
           child: CustomIconButton(
-            icon: LucideIcons.chevronLeft,
+            icon: LucideIcons.chevron_left,
             onPressed: () => Navigator.pop(context),
             isActive: false,
           ),
