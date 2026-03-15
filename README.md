@@ -94,6 +94,34 @@ For development with watch mode:
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
+## Unit tests
+
+The project includes unit tests for **filter logic**, **input validation**, and **data processing**. The test folder mirrors `lib/`: e.g. `test/domain/common/` tests `lib/domain/common/`.
+
+### What’s covered
+
+| Area | Test file | What it tests |
+|------|-----------|----------------|
+| **Filter logic** | `test/domain/common/filter_habits_for_date_test.dart` | Date filtering (daily/weekly), ongoing vs completed, sort order (A–Z / Z–A), date normalization |
+| **Input validation** | `test/domain/common/habit_name_validator_test.dart` | Habit name required, trim, null/empty/whitespace |
+| **Data processing** | `test/domain/usecases/habit/get_statistics_usecase_test.dart` | Empty habits, best streak, monthly completion %, top streaks order |
+
+### How to run tests
+
+Run all tests:
+
+```bash
+flutter test
+```
+
+Run a single test file:
+
+```bash
+flutter test test/domain/common/filter_habits_for_date_test.dart
+```
+
+For conventions on adding new tests and keeping them deterministic, see [test/README.md](test/README.md).
+
 ## Project Structure
 
 ```
