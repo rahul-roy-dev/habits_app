@@ -142,7 +142,7 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
                 colors: [
                   Color(habit.color).withValues(alpha: AppDimensions.opacityHigh),
                   Color(habit.color),
-                  Colors.black.withOpacity(0.9),
+                  Colors.black.withValues(alpha: AppDimensions.reminderGradientOverlayOpacity),
                 ],
               ),
             ),
@@ -290,7 +290,7 @@ class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderS
       ),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.9, end: 1.1).animate(
+    _animation = Tween<double>(begin: AppDimensions.reminderPulseScaleMin, end: AppDimensions.reminderPulseScaleMax).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -321,15 +321,11 @@ class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderS
           ],
         ),
         child: Icon(
-          _getIconData(widget.icon),
+          AppValues.getIconData(widget.icon),
           size: AppDimensions.reminderIconSize,
           color: Colors.white,
         ),
       ),
     );
-  }
-
-  IconData _getIconData(String name) {
-    return AppValues.habitIconMap[name] ?? Icons.check_circle;
   }
 }

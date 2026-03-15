@@ -22,14 +22,16 @@ class ToggleItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppDimensions.toggleHorizontalPadding, vertical: AppDimensions.toggleVerticalPadding),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.secondaryText.withValues(alpha: AppDimensions.opacityXs)
+              ? AppColors.primaryAccent.withValues(alpha: AppDimensions.opacityHigh)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(AppDimensions.toggleRadius),
         ),
         child: Text(
           text,
           style: TextStyle(
-            color: isSelected ? AppColors.primaryText : AppColors.secondaryText,
+            color: isSelected
+                ? AppColors.white.withValues(alpha: AppDimensions.opacityHigh)
+                : AppColors.secondaryText,
             fontSize: AppDimensions.fontSizeXxs,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),

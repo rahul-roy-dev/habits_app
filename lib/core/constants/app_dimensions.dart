@@ -138,13 +138,17 @@ class AppDimensions {
   static const double consistencyChartContentHeight = chartHeight + spacingMd + consistencyChartLabelRowHeight;
   static const double chartBarOpacityLow = 0.55;
   static const double heatmapOpacityMin = 0.25;
-  static const double heatmapOpacityMax = 1.0;
+  static const double heatmapOpacityMax = opacityHigh;
 
   // Streak Card
   static const double streakCardWidth = 140.0;
   static const double streakProgressSize = 60.0;
   static const double streakProgressStrokeWidth = 4.0;
   static const double fontSizeStreakTitle = 8.0;
+  /// Ring opacity when habit has no progress (not completed yet).
+  static const double streakProgressOpacityIncomplete = 0.35;
+  /// Ring opacity when habit is completed (progress fill).
+  static const double streakProgressOpacityComplete = opacityHigh;
 
   // Profile Avatar
   static const double avatarSizeXl = 100.0;
@@ -173,6 +177,7 @@ class AppDimensions {
   // Opacity
   static const double opacityHalf = 0.5;
   static const double opacityHigh = 0.8;
+  static const double opacityFull = 1.0;
 
   // Elevation
   static const double elevationNone = 0.0;
@@ -195,6 +200,9 @@ class AppDimensions {
   static const double reminderIconShadowBlur = 30.0;
   static const double reminderIconShadowSpread = 10.0;
   static const int reminderPulseAnimationDurationSeconds = 2;
+  static const double reminderGradientOverlayOpacity = 0.9;
+  static const double reminderPulseScaleMin = 0.9;
+  static const double reminderPulseScaleMax = 1.1;
   static const double reminderDescriptionOpacity = 0.8;
   static const double reminderDismissTextOpacity = 0.7;
   static const double reminderIconBgOpacity = 0.2;

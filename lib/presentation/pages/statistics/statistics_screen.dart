@@ -284,7 +284,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     (isDark
                             ? AppColors.primaryAccent
                             : AppColors.lightPrimaryAccent)
-                        .withValues(alpha: h > DemoConstants.chartBarHighOpacityThreshold ? 1.0 : AppDimensions.chartBarOpacityLow),
+                        .withValues(alpha: h > DemoConstants.chartBarHighOpacityThreshold ? AppDimensions.opacityFull : AppDimensions.opacityHigh),
                 borderRadius: BorderRadius.circular(AppDimensions.chartBarRadius),
               ),
             );
@@ -433,7 +433,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 (isDark
                         ? AppColors.primaryAccent
                         : AppColors.lightPrimaryAccent)
-                    .withValues(alpha: h > DemoConstants.chartBarHighOpacityThreshold ? 1.0 : AppDimensions.chartBarOpacityLow),
+                    .withValues(alpha: h > DemoConstants.chartBarHighOpacityThreshold ? AppDimensions.opacityFull : AppDimensions.opacityHigh),
             borderRadius: BorderRadius.circular(AppDimensions.chartBarRadius),
           ),
         );
@@ -482,7 +482,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return CustomCard(
           color: (isDark ? AppColors.surface : AppColors.lightSurface)
-              .withValues(alpha: AppDimensions.opacityMd),
+              .withValues(alpha: AppDimensions.opacityHigh),
           child: Row(
             children: [
               Container(

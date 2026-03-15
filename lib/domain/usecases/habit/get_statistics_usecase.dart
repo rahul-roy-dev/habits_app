@@ -19,10 +19,10 @@ class GetStatisticsUseCase {
   /// Lookback days for insight message (e.g. "most consistent on Monday").
   static const int _insightLookbackDays = 14;
 
-  StatisticsResult execute(List<HabitEntity> habits) {
+  StatisticsResult execute(List<HabitEntity> habits, [DateTime? referenceDate]) {
     if (habits.isEmpty) return StatisticsResult.empty();
 
-    final now = DateTime.now();
+    final now = referenceDate ?? DateTime.now();
     final totalHabits = habits.length;
 
     final monthlyPercent = _monthlyCompletionPercent(habits, now, totalHabits);

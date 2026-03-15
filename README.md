@@ -2,6 +2,26 @@
 
 A Flutter habit tracking application built with modern best practices.
 
+## Features
+
+### Fullscreen overlay reminders
+
+When a habit reminder fires, the app can show a **fullscreen overlay** so you can complete or dismiss the habit without leaving the flow. The overlay appears:
+
+- When the app is in the **foreground** (e.g. you're using the app at reminder time).
+- When you **open the app from a notification** (e.g. tap the reminder while the screen is off or the app is in the background).
+
+The overlay shows the habit’s **icon**, **title**, and **frequency** (e.g. “Daily habit”), and offers **Mark completed** and **Dismiss for now**. Tapping the notification with the screen off will wake the device and open this overlay so you can act on the reminder immediately.
+
+### Statistics screen
+
+The **Statistics** screen (consistency, activity heat map, top streaks, insights) is based on **real data** from your habits and completion history. It is not demo or placeholder content. Metrics are computed from:
+
+- Your habit list and completion dates.
+- The current (or test-injected) date for time-based charts.
+
+Use the **W** / **M** toggle to switch between **week** and **month** consistency views.
+
 ## Tech Stack
 
 - **Flutter** - UI framework

@@ -41,11 +41,12 @@ class StreakCard extends StatelessWidget {
                       (isDark
                               ? AppColors.primaryAccent
                               : AppColors.lightPrimaryAccent)
-                          .withValues(alpha: AppDimensions.opacityXs),
+                          .withValues(alpha: AppDimensions.streakProgressOpacityIncomplete),
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    isDark
-                        ? AppColors.primaryAccent
-                        : AppColors.lightPrimaryAccent,
+                    (isDark
+                            ? AppColors.primaryAccent
+                            : AppColors.lightPrimaryAccent)
+                        .withValues(alpha: AppDimensions.streakProgressOpacityComplete),
                   ),
                 ),
               ),

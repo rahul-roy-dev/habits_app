@@ -141,7 +141,7 @@ class _IconPickerSheetState extends State<IconPickerSheet> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg),
                 child: Row(
                   children: [
                     Text(
