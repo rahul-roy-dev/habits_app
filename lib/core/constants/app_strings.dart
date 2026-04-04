@@ -62,6 +62,17 @@ class AppStrings {
   static const String alertTime = 'Alert Time';
   static const String saveHabit = 'Save Habit';
   static const String updateHabit = 'Update Habit';
+  static const String done = 'Done';
+  static const String endOn = 'END ON';
+  static const String endOnNone = 'None';
+  static const String endOnDate = 'Date';
+  static const String endOnDays = 'Days';
+  static const String habitEndDaysSheetTitle = 'Number of days';
+  static const String habitEndsOnDateHint = 'Last active day';
+  static const String habitEndsAfterDaysHint = 'Challenge length';
+  static const String habitEndDaysSuffix = 'days';
+  /// Fullscreen reminder primary action: closes overlay and returns to the app (no auto-complete).
+  static const String reminderViewHabits = 'View my habits';
 
   // Profile
   static const String settings = 'Settings';

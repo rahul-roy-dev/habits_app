@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
 import 'package:habits_app/presentation/pages/placeholder_screen.dart';
 import 'package:habits_app/presentation/pages/auth/auth_gate_screen.dart';
 import 'package:habits_app/presentation/pages/auth/register_screen.dart';
@@ -45,16 +46,20 @@ class AppRoutes {
             : args as String?;
         final reminderSlotKey =
             args is Map ? args['reminderSlotKey'] as String? : null;
+        final habit =
+            args is Map ? args['habit'] as HabitEntity? : null;
         return MaterialPageRoute(
           builder: (_) => HabitReminderPage(
             habitId: habitId ?? '',
             reminderSlotKey: reminderSlotKey,
+            initialHabit: habit,
           ),
           fullscreenDialog: true,
         );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
+            appBar: const HabitsAppBar(title: 'Not found'),
             body: Center(child: Text('No route defined for ${settings.name}')),
           ),
         );

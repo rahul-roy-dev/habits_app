@@ -10,7 +10,6 @@ import android.os.PowerManager
 import android.view.WindowManager
 import android.content.Context
 import android.content.Intent
-import android.app.KeyguardManager
 import android.net.Uri
 import android.provider.Settings
 
@@ -35,11 +34,10 @@ class MainActivity : FlutterActivity() {
         super.onCreate(savedInstanceState)
 
         // Allow activity to show over lock screen and turn screen on (required for full-screen reminder when screen is off).
+        // Do not call requestDismissKeyguard here — it ran on every launch and duplicated/conflicted with system UI.
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            keyguardManager.requestDismissKeyguard(this, null)
         } else {
             @Suppress("DEPRECATION")
             window.addFlags(

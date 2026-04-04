@@ -19,6 +19,7 @@ class StatMiniCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomCard(
+      showShadow: true,
       padding: const EdgeInsets.all(AppDimensions.spacingMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,7 +30,7 @@ class StatMiniCard extends StatelessWidget {
               color: isDark
                   ? AppColors.secondaryText
                   : AppColors.lightSecondaryText,
-               fontSize: AppDimensions.fontSizeXxs,
+               fontSize: AppDimensions.fontSizeMd,
               fontWeight: FontWeight.bold,
             ),
           ),

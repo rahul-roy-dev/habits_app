@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/theme/app_shadows.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/domain/common/habit_filter.dart';
@@ -33,6 +34,7 @@ class SortOrderDropdown extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surface : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        boxShadow: AppShadows.cardDrop(),
         border: Border.all(
           color: borderColor,
           width: AppDimensions.borderWidthThin,

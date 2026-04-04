@@ -7,6 +7,7 @@ import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/widgets/common/profile_menu_item.dart';
 import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
 
 class AccountSettingsScreen extends ConsumerWidget {
   const AccountSettingsScreen({super.key});
@@ -18,25 +19,16 @@ class AccountSettingsScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: HabitsAppBar(
+        title: 'Account Settings',
         leading: Padding(
-           padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
+          padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
           child: CustomIconButton(
             icon: LucideIcons.chevron_left,
             onPressed: () => Navigator.pop(context),
             isActive: false,
           ),
         ),
-        title: Text(
-          'Account Settings',
-          style: TextStyle(
-            color: isDark ? AppColors.primaryText : AppColors.lightPrimaryText,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
       ),
        body: Padding(
         padding: const EdgeInsets.all(AppDimensions.spacingXl),

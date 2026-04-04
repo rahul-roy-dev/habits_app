@@ -1,3 +1,6 @@
+/// How a habit's end is defined. Serialized to Firestore as enum name.
+enum HabitEndMode { none, onDate, afterDays }
+
 /// Domain entity for a habit. Defaults are kept in sync with [AppValues] in core.
 class HabitEntity {
   final String id;
@@ -12,6 +15,12 @@ class HabitEntity {
   final List<int> selectedWeekdays;
   final int? alertHour;
   final int? alertMinute;
+  /// No end, fixed calendar last day, or challenge length from [createdAt].
+  final HabitEndMode endMode;
+  /// Inclusive last calendar day the habit is active (local date). Set when [endMode] is [HabitEndMode.onDate] or [HabitEndMode.afterDays].
+  final DateTime? endDate;
+  /// Stored when [endMode] is [HabitEndMode.afterDays] so the edit form can show the same duration.
+  final int? endAfterDays;
 
   static const String _defaultDescription = '';
   static const String _defaultIcon = 'droplets';
@@ -30,6 +39,9 @@ class HabitEntity {
     this.selectedWeekdays = const [],
     this.alertHour,
     this.alertMinute,
+    this.endMode = HabitEndMode.none,
+    this.endDate,
+    this.endAfterDays,
   });
 
   static DateTime normalizeDate(DateTime d) {
@@ -38,11 +50,45 @@ class HabitEntity {
 
   /// True if this habit should be shown on [date]. Daily (no selected weekdays)
   /// appears every day; weekly appears only when [date].weekday is in
-  /// [selectedWeekdays].
+  /// [selectedWeekdays]. Dates after [endDate] never apply.
   bool appearsOnDate(DateTime date) {
     final normalized = normalizeDate(date);
+    if (endDate != null) {
+      final end = normalizeDate(endDate!);
+      if (normalized.isAfter(end)) return false;
+    }
     if (selectedWeekdays.isEmpty) return true;
     return selectedWeekdays.contains(normalized.weekday);
+  }
+
+  /// Last active calendar day (inclusive), from duration counted from [anchor] (typically [createdAt]).
+  static DateTime endDateAfterDaysFrom(DateTime anchor, int days) {
+    final start = normalizeDate(anchor);
+    return start.add(Duration(days: days - 1));
+  }
+
+  /// Resolves persisted end fields from UI mode. [anchorCreatedAt] is the habit creation instant (edit: existing).
+  static ({HabitEndMode mode, DateTime? endDate, int? endAfterDays}) resolveEndFields({
+    required HabitEndMode endMode,
+    required DateTime anchorCreatedAt,
+    DateTime? pickedEndDate,
+    int? durationDays,
+    required int minDays,
+    required int maxDays,
+    required int defaultDays,
+  }) {
+    switch (endMode) {
+      case HabitEndMode.none:
+        return (mode: HabitEndMode.none, endDate: null, endAfterDays: null);
+      case HabitEndMode.onDate:
+        final d = pickedEndDate != null ? normalizeDate(pickedEndDate) : null;
+        return (mode: HabitEndMode.onDate, endDate: d, endAfterDays: null);
+      case HabitEndMode.afterDays:
+        final raw = durationDays ?? defaultDays;
+        final n = raw.clamp(minDays, maxDays);
+        final end = endDateAfterDaysFrom(anchorCreatedAt, n);
+        return (mode: HabitEndMode.afterDays, endDate: end, endAfterDays: n);
+    }
   }
 
   bool isCompletedOnDate(DateTime date) {
@@ -67,6 +113,10 @@ class HabitEntity {
     int? alertHour,
     int? alertMinute,
     bool clearAlertTime = false,
+    HabitEndMode? endMode,
+    DateTime? endDate,
+    int? endAfterDays,
+    bool clearEnd = false,
   }) {
     return HabitEntity(
       id: id ?? this.id,
@@ -81,6 +131,9 @@ class HabitEntity {
       selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
       alertHour: clearAlertTime ? null : (alertHour ?? this.alertHour),
       alertMinute: clearAlertTime ? null : (alertMinute ?? this.alertMinute),
+      endMode: clearEnd ? HabitEndMode.none : (endMode ?? this.endMode),
+      endDate: clearEnd ? null : (endDate ?? this.endDate),
+      endAfterDays: clearEnd ? null : (endAfterDays ?? this.endAfterDays),
     );
   }
 
@@ -100,7 +153,10 @@ class HabitEntity {
           userId == other.userId &&
           selectedWeekdays == other.selectedWeekdays &&
           alertHour == other.alertHour &&
-          alertMinute == other.alertMinute;
+          alertMinute == other.alertMinute &&
+          endMode == other.endMode &&
+          endDate == other.endDate &&
+          endAfterDays == other.endAfterDays;
 
   @override
   int get hashCode => Object.hash(
@@ -116,5 +172,8 @@ class HabitEntity {
         Object.hashAll(selectedWeekdays),
         alertHour,
         alertMinute,
+        endMode,
+        endDate,
+        endAfterDays,
       );
 }

@@ -21,6 +21,7 @@ class ProfileMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomCard(
+      showShadow: true,
       padding: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,

@@ -93,6 +93,9 @@ class Habit extends _$Habit {
     List<int> selectedWeekdays = const [],
     int? alertHour,
     int? alertMinute,
+    HabitEndMode endMode = HabitEndMode.none,
+    DateTime? endOnDate,
+    int? endAfterDaysCount,
   }) async {
     final user = ref.read(authProvider).currentUser;
     if (user == null) return;
@@ -106,6 +109,9 @@ class Habit extends _$Habit {
       selectedWeekdays: selectedWeekdays,
       alertHour: alertHour,
       alertMinute: alertMinute,
+      endMode: endMode,
+      endOnDate: endOnDate,
+      endAfterDaysCount: endAfterDaysCount,
     );
     await loadHabits();
 

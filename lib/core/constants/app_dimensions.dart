@@ -52,6 +52,10 @@ class AppDimensions {
   static const double cardHeightMd = 58.0;
   static const double cardHeightLg = 80.0;
 
+  /// Spacing above / below the Save–Update CTA at the end of the add/edit habit form.
+  static const double habitFormSaveButtonTopSpacing = spacingXxl;
+  static const double habitFormSaveButtonBottomSpacing = spacingMd;
+
   // Bottom Bar
   static const double bottomBarHeight = 58.0;
   static const double bottomBarWidthRatio = 0.92;
@@ -65,7 +69,8 @@ class AppDimensions {
   static const double fabBorderWidth = 4.0;
 
   // Date Strip
-  static const double dateStripHeight = 80.0;
+  /// Room for date pill content plus [Material] shadow without clipping.
+  static const double dateStripHeight = 88.0;
   static const double dateItemWidth = 60.0;
   static const double dateItemRadius = 20.0;
   static const double dateDotSize = 4.0;
@@ -142,9 +147,12 @@ class AppDimensions {
 
   // Streak Card
   static const double streakCardWidth = 140.0;
+  /// Statistics "Top Streaks" horizontal strip: must fit ring + labels + padding/margins without overflow.
+  static const double topStreaksStripHeight = 210.0;
   static const double streakProgressSize = 60.0;
   static const double streakProgressStrokeWidth = 4.0;
-  static const double fontSizeStreakTitle = 8.0;
+  /// Habit name under the streak value (Top Streaks cards).
+  static const double fontSizeStreakTitle = 12;
   /// Ring opacity when habit has no progress (not completed yet).
   static const double streakProgressOpacityIncomplete = 0.35;
   /// Ring opacity when habit is completed (progress fill).
@@ -244,4 +252,29 @@ class AppDimensions {
 
   // Register screen gradient
   static const List<double> registerGradientStops = [0.0, 0.3];
+
+  // App modal bottom sheet ([showAppModalBottomSheet])
+  static const double modalBarrierOpacityDefault = 0.45;
+  static const double modalDragHandleWidth = 40.0;
+  static const double modalDragHandleHeight = 4.0;
+  static const double modalDragHandleBorderRadius = 2.0;
+
+  // Achievements main screen ([AchievementsScreen] — hero, grids, monthly card)
+  static const double achievementsHeroImpactNumberSize = 60.0;
+  static const double achievementsHeroImpactLineHeight = 1.0;
+  static const int achievementsWeeklyGridCrossAxisCount = 2;
+  static const double achievementsWeeklyGridChildAspectRatio = 1.1;
+  static const double achievementsMonthlyProgressRingSize = 72.0;
+  static const double achievementsMonthlyProgressRingTintAlpha = 0.1;
+  static const double achievementsMonthlyProgressValue = 0.82;
+  static const double achievementsMonthlyProgressMinHeight = 10.0;
+  static const double achievementsEarnedBadgeIconContainerSize = 36.0;
+  static const double achievementsEarnedBadgeGlyphSize = 18.0;
+  static const double achievementsYearlyThumbnailSize = 72.0;
+  static const double achievementsEarnedLabelLetterSpacing = 0.5;
+  static const double achievementsBadgeCapsLetterSpacing = 0.8;
+  static const double achievementsYearlyGradientStartAlpha = 0.7;
+  static const double achievementsYearlyGradientEndAlpha = 0.5;
+  static const double achievementsYearlyBadgeFillAlphaDark = 0.2;
+  static const double achievementsYearlyBadgeFillAlphaLight = 0.15;
 }

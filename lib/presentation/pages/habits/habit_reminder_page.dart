@@ -5,22 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
+import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 import 'package:habits_app/core/services/notification_service.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'package:habits_app/presentation/providers/habit_provider.dart';
 import 'package:just_audio/just_audio.dart';
-
 const String _kReminderRingtoneAsset = 'assets/sounds/soar_binaural_beat.mp3';
 
 class HabitReminderPage extends ConsumerStatefulWidget {
   final String habitId;
   final String? reminderSlotKey;
+  /// When the app cold-starts from a notification, Riverpod may not have habits yet; this renders immediately.
+  final HabitEntity? initialHabit;
 
   const HabitReminderPage({
     super.key,
     required this.habitId,
     this.reminderSlotKey,
+    this.initialHabit,
   });
 
   @override
@@ -35,6 +38,7 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     HapticFeedback.heavyImpact();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(_HabitReminderPageState.kRingtoneStartDelay, () {
@@ -115,6 +119,10 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     _ringtoneStopTimer?.cancel();
     _ringtoneStopTimer = null;
     _ringtonePlayer.dispose();
@@ -123,7 +131,8 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
 
   @override
   Widget build(BuildContext context) {
-    final habit = ref.watch(habitByIdProvider(widget.habitId));
+    final habitFromProvider = ref.watch(habitByIdProvider(widget.habitId));
+    final habit = habitFromProvider ?? widget.initialHabit;
 
     if (habit == null) {
       return const Scaffold(
@@ -131,24 +140,35 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
       );
     }
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(habit.color).withValues(alpha: AppDimensions.opacityHigh),
-                  Color(habit.color),
-                  Colors.black.withValues(alpha: AppDimensions.reminderGradientOverlayOpacity),
-                ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(habit.color).withValues(alpha: AppDimensions.opacityHigh),
+                      Color(habit.color),
+                      Colors.black.withValues(alpha: AppDimensions.reminderGradientOverlayOpacity),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-          SafeArea(
-            child: Column(
+            SafeArea(
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -205,7 +225,6 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
                               if (widget.reminderSlotKey != null) {
                                 await NotificationService().markReminderAcknowledged(widget.reminderSlotKey!);
                               }
-                              await ref.read(habitProvider.notifier).toggleHabit(habit, DateTime.now());
                             } finally {
                               await NotificationService().scheduleHabitReminder(habit);
                               if (context.mounted) Navigator.of(context).pop();
@@ -222,7 +241,7 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
                             elevation: AppDimensions.reminderButtonElevation,
                           ),
                           child: const Text(
-                            'MARK COMPLETED',
+                            AppStrings.reminderViewHabits,
                             style: TextStyle(
                               fontSize: AppDimensions.reminderDescriptionFontSize,
                               fontWeight: FontWeight.bold,
@@ -260,8 +279,9 @@ class _HabitReminderPageState extends ConsumerState<HabitReminderPage> {
                 ),
               ],
             ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

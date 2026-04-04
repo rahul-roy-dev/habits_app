@@ -7,6 +7,10 @@ import 'package:habits_app/presentation/widgets/common/custom_input.dart';
 import 'package:habits_app/presentation/widgets/common/custom_toast.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/presentation/providers/ui_state_providers.dart';
+import 'package:habits_app/core/constants/app_strings.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
+import 'package:habits_app/presentation/widgets/common/custom_icon_button.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -37,6 +41,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      appBar: HabitsAppBar(
+        title: AppStrings.signUp,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
+          child: CustomIconButton(
+            icon: LucideIcons.chevron_left,
+            onPressed: () => Navigator.pop(context),
+            isActive: false,
+          ),
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -50,17 +65,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: AppDimensions.spacingXl),
-                      Text(
-                        'Create Your\nAccount',
-                        style: TextStyle(
-                          fontSize: AppDimensions.fontSizeMassive,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppColors.primaryText
-                              : AppColors.lightPrimaryText,
-                        ),
-                      ),
-                      const SizedBox(height: AppDimensions.spacingXs),
                       Text(
                         'Join the community and start building better habits today.',
                         style: TextStyle(

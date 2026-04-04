@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:habits_app/domain/entities/habit_entity.dart';
 import 'core/theme/app_theme.dart';
 import 'core/di/service_locator.dart';
 import 'core/services/notification_service.dart';
@@ -16,6 +18,7 @@ class _FlutterReminderOverlayNavigator implements ReminderOverlayNavigator {
   void pushReminderOverlay({
     required String habitId,
     required String? reminderSlotKey,
+    HabitEntity? habit,
     void Function()? onPopped,
   }) {
     _navigatorKey.currentState?.pushNamed(
@@ -23,6 +26,7 @@ class _FlutterReminderOverlayNavigator implements ReminderOverlayNavigator {
       arguments: <String, dynamic>{
         'habitId': habitId,
         'reminderSlotKey': reminderSlotKey,
+        if (habit != null) 'habit': habit,
       },
     ).then((_) => onPopped?.call());
   }
@@ -89,6 +93,20 @@ class _HabitlyAppState extends ConsumerState<HabitlyApp> with WidgetsBindingObse
       themeMode: themeMode,
       initialRoute: widget.initialRoute,
       onGenerateRoute: AppRoutes.generateRoute,
+      builder: (context, child) {
+        final brightness = Theme.of(context).brightness;
+        final overlay = brightness == Brightness.dark
+            ? SystemUiOverlayStyle.light.copyWith(
+                statusBarColor: Colors.transparent,
+              )
+            : SystemUiOverlayStyle.dark.copyWith(
+                statusBarColor: Colors.transparent,
+              );
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlay,
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

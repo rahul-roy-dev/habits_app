@@ -5,13 +5,13 @@ import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 import 'package:habits_app/core/constants/demo_constants.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
-import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
 import 'package:habits_app/presentation/widgets/common/stat_mini_card.dart';
 import 'package:habits_app/presentation/widgets/common/streak_card.dart';
 import 'package:habits_app/presentation/widgets/common/toggle_item.dart';
 import 'package:habits_app/presentation/providers/auth_provider.dart';
 import 'package:habits_app/domain/entities/statistics_result.dart';
 import 'package:habits_app/presentation/providers/statistics_provider.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   final ScrollController? scrollController;
@@ -39,29 +39,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final stats = ref.watch(statisticsProvider);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Icon(
-          Icons.bar_chart,
-          color: isDark
-              ? AppColors.primaryAccent
-              : AppColors.lightPrimaryAccent,
-        ),
-        title: Text(
-          'Statistics',
-          style: TextStyle(
-            color: isDark ? AppColors.primaryText : AppColors.lightPrimaryText,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        actions: const [
-          Padding(
-             padding: EdgeInsets.only(right: AppDimensions.spacingMd),
-            child: CustomAvatar(initials: 'AR', size: AppDimensions.avatarSizeSm),
-          ),
-        ],
+      appBar: const HabitsAppBar(
+        title: 'Statistics',
       ),
       body: SingleChildScrollView(
         controller: widget.scrollController,
@@ -164,6 +143,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             ),
             const SizedBox(height: AppDimensions.spacingMd),
             CustomCard(
+              showShadow: true,
               padding: const EdgeInsets.all(AppDimensions.spacingMd),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,7 +192,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   Widget _buildTopStreaksEdgeToEdge(StatisticsResult stats) {
     if (stats.topStreaksByCategory.isEmpty) {
       return SizedBox(
-        height: AppDimensions.cardHeightLg * 2,
+        height: AppDimensions.topStreaksStripHeight,
         child: Center(
           child: Text(
             'No streaks yet. Complete habits to build them!',
@@ -242,12 +222,15 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       ));
     }
     return SizedBox(
-      height: AppDimensions.cardHeightLg * 2,
+      height: AppDimensions.topStreaksStripHeight,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(
-          left: AppDimensions.spacingLg,
-          right: AppDimensions.spacingLg,
+        clipBehavior: Clip.none,
+        padding: const EdgeInsets.fromLTRB(
+          AppDimensions.spacingLg,
+          AppDimensions.spacingSm,
+          AppDimensions.spacingLg,
+          AppDimensions.spacingSm,
         ),
         children: children,
       ),
@@ -394,6 +377,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             ),
             const SizedBox(height: AppDimensions.spacingMd),
             CustomCard(
+              showShadow: true,
               padding: const EdgeInsets.all(AppDimensions.spacingLg),
               child: SizedBox(
                 height: chartContentHeight,
@@ -481,6 +465,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return CustomCard(
+          showShadow: true,
           color: (isDark ? AppColors.surface : AppColors.lightSurface)
               .withValues(alpha: AppDimensions.opacityHigh),
           child: Row(

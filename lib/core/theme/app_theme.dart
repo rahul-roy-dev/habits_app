@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import '../constants/app_dimensions.dart';
 
@@ -8,6 +9,11 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.background,
+      appBarTheme: AppBarTheme(
+        systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+        ),
+      ),
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primaryAccent,
         secondary: AppColors.secondaryAccent,
@@ -85,6 +91,11 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.lightBackground,
+      appBarTheme: AppBarTheme(
+        systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+        ),
+      ),
       colorScheme: const ColorScheme.light(
         primary: AppColors.lightPrimaryAccent,
         secondary: AppColors.lightSuccess,

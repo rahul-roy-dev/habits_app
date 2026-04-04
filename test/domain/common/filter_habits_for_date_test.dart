@@ -91,5 +91,21 @@ void main() {
       expect(result.length, 1);
       expect(result.single.id, '3');
     });
+
+    test('excludes habits after end date', () {
+      final endedSunday = HabitEntity(
+        id: 'ended',
+        title: 'Ended',
+        createdAt: monday,
+        userId: 'u1',
+        selectedWeekdays: [],
+        completionDates: [],
+        endMode: HabitEndMode.onDate,
+        endDate: DateTime(2025, 3, 9),
+      );
+      final habits = [dailyHabit, endedSunday];
+      final result = filterHabitsForDate(habits, monday, HabitFilter.ongoing, HabitSortOrder.aToZ);
+      expect(result.map((h) => h.id).toList(), ['1']);
+    });
   });
 }

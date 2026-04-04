@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
 
 class PlaceholderScreen extends StatelessWidget {
   final String title;
@@ -7,7 +8,7 @@ class PlaceholderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: HabitsAppBar(title: title),
       body: Center(child: Text('Coming Soon: $title')),
     );
   }

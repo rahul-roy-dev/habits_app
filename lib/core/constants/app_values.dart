@@ -78,6 +78,10 @@ class AppValues {
   static const String defaultFrequency = 'Daily';
 
   // Reminder / notification timing (Clean Architecture: single source of truth)
+  /// Default time when opening the alert time picker (no time chosen yet).
+  static const int defaultAlertHour = 9;
+  static const int defaultAlertMinute = 0;
+
   /// Interval (seconds) for checking if we should show in-app overlay when app is in foreground.
   static const int foregroundReminderCheckIntervalSeconds = 30;
   /// Delay (seconds) before retrying notification-tap handling when habit list was not loaded yet.
@@ -98,4 +102,9 @@ class AppValues {
   static const int weekdayFirst = 1;
   /// Weekday range: last weekday index (7 = Sunday). Use with [daysInWeek].
   static const int weekdayLast = 7;
+
+  /// Habit "end after N days" challenge picker (inclusive of start day).
+  static const int habitEndDaysMin = 1;
+  static const int habitEndDaysMax = 365;
+  static const int habitEndDaysDefault = 30;
 }

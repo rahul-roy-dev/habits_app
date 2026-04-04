@@ -4,8 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:habits_app/core/constants/app_values.dart';
+import 'package:habits_app/core/di/service_locator.dart';
 import 'package:habits_app/core/services/reminder_overlay_navigator.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
+import 'package:habits_app/domain/repositories/habit/i_habit_reader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -140,11 +142,12 @@ class NotificationService {
     _overlayNavigator?.pushReminderOverlay(
       habitId: habit.id,
       reminderSlotKey: slotKey,
+      habit: habit,
       onPopped: () => _isReminderOverlayVisible = false,
     );
   }
 
-  /// Call when user taps "Dismiss for now" or "MARK COMPLETED" so this reminder
+  /// Call when user taps "Dismiss for now" or "View my habits" so this reminder
   Future<void> markReminderAcknowledged(String reminderSlotKey) async {
     _pendingAckSlotKeys.remove(reminderSlotKey);
     final prefs = await SharedPreferences.getInstance();
@@ -180,7 +183,7 @@ class NotificationService {
         break;
       }
     }
-
+    habit ??= await sl<IHabitReader>().getHabitById(habitId);
 
     if (habit == null) {
       if (!isLaunchDetailsRetry) {
@@ -205,6 +208,7 @@ class NotificationService {
     _overlayNavigator?.pushReminderOverlay(
       habitId: habitId,
       reminderSlotKey: slotKey,
+      habit: habit,
       onPopped: () => _isReminderOverlayVisible = false,
     );
   }
@@ -218,8 +222,11 @@ class NotificationService {
     bool? granted;
     if (android != null) {
       granted = await android.requestNotificationsPermission();
-      
+
       await android.requestExactAlarmsPermission();
+      try {
+        await android.requestFullScreenIntentPermission();
+      } catch (_) {}
     }
     if (ios != null) {
       granted = await ios.requestPermissions(

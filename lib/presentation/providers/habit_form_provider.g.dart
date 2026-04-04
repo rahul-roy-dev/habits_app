@@ -58,7 +58,7 @@ final class HabitFormProvider
   }
 }
 
-String _$habitFormHash() => r'2f1f148c10269907fd544b0083761505a15a9d9b';
+String _$habitFormHash() => r'fb1bd749961a8e0d6acbecc8b234c2ecbc89d996';
 
 final class HabitFormFamily extends $Family
     with

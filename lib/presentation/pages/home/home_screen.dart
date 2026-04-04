@@ -5,7 +5,7 @@ import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/presentation/routes/app_routes.dart';
 import 'package:habits_app/presentation/widgets/common/custom_card.dart';
 import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
-import 'package:habits_app/presentation/widgets/common/placeholder_view.dart';
+import 'package:habits_app/presentation/pages/achievements/achievements_screen.dart';
 import 'package:habits_app/presentation/widgets/common/header_icon.dart';
 import 'package:habits_app/presentation/widgets/common/date_item.dart';
 import 'package:habits_app/presentation/widgets/common/claim_button.dart';
@@ -23,6 +23,7 @@ import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/core/constants/app_values.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -80,14 +81,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         onBottomBarShown: () {},
         body: (context, controller) => TabBarView(
           controller: _tabController,
-          physics: const BouncingScrollPhysics(),
+          // Swiping would land on index 2 (FAB spacer) which has no real page.
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             _DashboardTab(
               controller: controller,
             ),
             StatisticsScreen(scrollController: controller),
-            const SizedBox.shrink(),
-            const PlaceholderView(title: AppStrings.social),
+            _FabTabPlaceholder(),
+            AchievementsScreen(scrollController: controller),
             const ProfileScreen(),
           ],
         ),
@@ -110,6 +112,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
               child: TabBar(
                 controller: _tabController,
+                onTap: (index) {
+                  if (index == 2) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+                      if (_tabController.index != 2) return;
+                      final prev = _tabController.previousIndex;
+                      final target = (prev >= 0 && prev != 2) ? prev : 0;
+                      _tabController.animateTo(target);
+                    });
+                  }
+                },
                 indicator: const BoxDecoration(),
                 indicatorColor: Colors.transparent,
                 dividerColor: Colors.transparent,
@@ -170,27 +183,82 @@ class _DashboardTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        _buildHeader(context, ref),
-        Expanded(
-          child: SingleChildScrollView(
-            controller: controller,
-            padding: const EdgeInsets.only(
-              top: AppDimensions.spacingLg,
-              bottom: AppDimensions.bottomScrollPadding,
+    final authState = ref.watch(authProvider);
+    final user = authState.currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: HabitsAppBar(
+        title: AppStrings.home,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: CustomAvatar(
+              initials: user?.name.substring(0, 1) ?? AppStrings.defaultUserInitial,
+              size: AppDimensions.avatarSizeMd,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDateStrip(context, ref),
-                SizedBox(height: AppDimensions.spacingXxl),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProgressCard(context, ref),
+          ),
+        ),
+        actions: [
+          HeaderIcon(icon: Icons.bar_chart_outlined, onTap: () {}),
+          SizedBox(width: AppDimensions.spacingSm),
+          Padding(
+            padding: const EdgeInsets.only(right: AppDimensions.spacingLg),
+            child: const HeaderIcon(icon: Icons.notifications_none),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              controller: controller,
+              clipBehavior: Clip.none,
+              padding: const EdgeInsets.only(
+                top: AppDimensions.spacingLg,
+                bottom: AppDimensions.bottomScrollPadding,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppStrings.goodMorning,
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.secondaryText
+                                : AppColors.lightSecondaryText,
+                            fontSize: AppDimensions.fontSizeXxs,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          user?.name ?? AppStrings.defaultUserName,
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.primaryText
+                                : AppColors.lightPrimaryText,
+                            fontSize: AppDimensions.fontSizeXxl,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: AppDimensions.spacingLg),
+                  _buildDateStrip(context, ref),
+                  SizedBox(height: AppDimensions.spacingXxl),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildProgressCard(context, ref),
                       SizedBox(height: AppDimensions.spacingXxl),
                       _buildFilterChips(ref),
                       SizedBox(height: AppDimensions.spacingSm),
@@ -205,57 +273,7 @@ class _DashboardTab extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final user = authState.currentUser;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingLg, vertical: AppDimensions.spacingSm),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          children: [
-            CustomAvatar(
-              initials: user?.name.substring(0, 1) ?? AppStrings.defaultUserInitial,
-              size: AppDimensions.avatarSizeMd,
-            ),
-            SizedBox(width: AppDimensions.spacingSm),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.goodMorning,
-                  style: TextStyle(
-                    color: isDark
-                        ? AppColors.secondaryText
-                        : AppColors.lightSecondaryText,
-                    fontSize: AppDimensions.fontSizeXxs,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  user?.name ?? AppStrings.defaultUserName,
-                  style: TextStyle(
-                    color: isDark
-                        ? AppColors.primaryText
-                        : AppColors.lightPrimaryText,
-                    fontSize: AppDimensions.fontSizeXxl,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            HeaderIcon(icon: Icons.bar_chart_outlined, onTap: () {}),
-            SizedBox(width: AppDimensions.spacingSm),
-            const HeaderIcon(icon: Icons.notifications_none),
-          ],
-        ),
-      ),
+    ),
     );
   }
 
@@ -306,6 +324,7 @@ class _DashboardTab extends ConsumerWidget {
           height: AppDimensions.dateStripHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
             itemCount: AppDimensions.daysToShow,
             itemBuilder: (context, index) {
               final date = now.subtract(Duration(days: AppDimensions.dateOffsetDays - index));
@@ -334,6 +353,7 @@ class _DashboardTab extends ConsumerWidget {
     final progress = total > 0 ? completed / total : 0.0;
 
     return CustomCard(
+      showShadow: true,
       padding: const EdgeInsets.all(AppDimensions.spacingLg),
       child: Row(
         children: [
@@ -375,8 +395,6 @@ class _DashboardTab extends ConsumerWidget {
                     fontSize: AppDimensions.fontSizeMd,
                   ),
                 ),
-                SizedBox(height: AppDimensions.spacingMd),
-                ClaimButton(onTap: () {}),
               ],
             ),
           ),
@@ -512,6 +530,7 @@ class _DashboardTab extends ConsumerWidget {
 
     return ListView.separated(
       shrinkWrap: true,
+      clipBehavior: Clip.none,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: habits.length,
@@ -525,9 +544,7 @@ class _DashboardTab extends ConsumerWidget {
             ),
           );
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-          child: Dismissible(
+        return Dismissible(
             key: ValueKey(habit.id),
             direction: DismissDirection.endToStart,
             confirmDismiss: (direction) async {
@@ -546,7 +563,10 @@ class _DashboardTab extends ConsumerWidget {
             background: Container(
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: AppDimensions.spacingLg),
-              color: AppColors.error,
+              decoration: BoxDecoration(
+                color: AppColors.error,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+              ),
               child: const Icon(Icons.delete_outline, color: Colors.white),
             ),
             child: GestureDetector(
@@ -558,7 +578,8 @@ class _DashboardTab extends ConsumerWidget {
                         arguments: habit,
                       ),
               child: CustomCard(
-                borderRadius: 0,
+                showShadow: true,
+                borderRadius: AppDimensions.radiusMd,
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.spacingMd,
                   vertical: AppDimensions.spacingSm,
@@ -642,10 +663,21 @@ class _DashboardTab extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
         );
       },
     );
   }
 
+}
+
+class _FabTabPlaceholder extends StatelessWidget {
+  const _FabTabPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: const SizedBox.expand(),
+    );
+  }
 }

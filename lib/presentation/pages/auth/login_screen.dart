@@ -12,6 +12,7 @@ import 'package:habits_app/presentation/widgets/common/social_button.dart';
 import 'package:habits_app/core/constants/image_paths.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -63,10 +64,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final authState = ref.watch(authProvider);
     final obscurePassword = ref.watch(passwordVisibilityProvider);
 
     return Scaffold(
+      appBar: const HabitsAppBar(title: AppStrings.welcomeBack),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -114,19 +115,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   SizedBox(height: AppDimensions.spacingXl),
-                  Center(
-                    child: Text(
-                      AppStrings.welcomeBack,
-                      style: TextStyle(
-                        fontSize: AppDimensions.fontSizeMassive,
-                        fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? AppColors.primaryText
-                            : AppColors.lightPrimaryText,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: AppDimensions.spacingXs),
                   Center(
                     child: Text(
                       AppStrings.journeyStartsHere,

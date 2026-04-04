@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
+import 'package:habits_app/core/theme/app_shadows.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
 import 'package:habits_app/domain/common/habit_filter.dart';
@@ -78,6 +79,7 @@ class _Chip extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+          boxShadow: AppShadows.cardDrop(),
           border: isSelected
               ? null
               : Border.all(

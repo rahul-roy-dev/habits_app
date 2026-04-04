@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
-import 'package:habits_app/domain/entities/statistics_result.dart';
 import 'package:habits_app/domain/usecases/habit/get_statistics_usecase.dart';
 
 /// Unit tests for [GetStatisticsUseCase] (data processing).

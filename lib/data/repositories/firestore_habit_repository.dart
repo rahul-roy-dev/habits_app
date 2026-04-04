@@ -15,8 +15,10 @@ class FirestoreHabitRepository implements IHabitRepository {
   @override
   Future<void> init() async {}
 
-  Map<String, dynamic> _toMap(HabitEntity entity) {
-    return {
+  /// [merge] true: use [FieldValue.delete] for null [HabitEntity.endDate] / [HabitEntity.endAfterDays]
+  /// so merged updates clear previous Firestore fields.
+  Map<String, dynamic> _toMap(HabitEntity entity, {required bool merge}) {
+    final map = <String, dynamic>{
       'id': entity.id,
       'title': entity.title,
       'description': entity.description,
@@ -31,7 +33,25 @@ class FirestoreHabitRepository implements IHabitRepository {
       'selectedWeekdays': entity.selectedWeekdays,
       'alertHour': entity.alertHour,
       'alertMinute': entity.alertMinute,
+      'endMode': entity.endMode.name,
     };
+    if (entity.endDate != null) {
+      map['endDate'] = Timestamp.fromDate(
+        DateTime(
+          entity.endDate!.year,
+          entity.endDate!.month,
+          entity.endDate!.day,
+        ),
+      );
+    } else if (merge) {
+      map['endDate'] = FieldValue.delete();
+    }
+    if (entity.endAfterDays != null) {
+      map['endAfterDays'] = entity.endAfterDays;
+    } else if (merge) {
+      map['endAfterDays'] = FieldValue.delete();
+    }
+    return map;
   }
 
   HabitEntity _fromMap(Map<String, dynamic> map, String id) {
@@ -43,6 +63,26 @@ class FirestoreHabitRepository implements IHabitRepository {
     final selectedWeekdays = selectedWeekdaysRaw != null
         ? selectedWeekdaysRaw.map((e) => (e as num).toInt()).toList()
         : <int>[];
+    final endDateRaw = map['endDate'];
+    DateTime? endDate;
+    if (endDateRaw is Timestamp) {
+      final d = endDateRaw.toDate();
+      endDate = HabitEntity.normalizeDate(d);
+    }
+    final endModeStr = map['endMode'] as String?;
+    HabitEndMode endMode;
+    if (endModeStr != null) {
+      try {
+        endMode = HabitEndMode.values.byName(endModeStr);
+      } catch (_) {
+        endMode = HabitEndMode.none;
+      }
+    } else if (endDate != null) {
+      endMode = HabitEndMode.onDate;
+    } else {
+      endMode = HabitEndMode.none;
+    }
+    final endAfterDays = (map['endAfterDays'] as num?)?.toInt();
     return HabitEntity(
       id: id,
       title: map['title'] as String? ?? '',
@@ -56,6 +96,9 @@ class FirestoreHabitRepository implements IHabitRepository {
       selectedWeekdays: selectedWeekdays,
       alertHour: map['alertHour'] as int?,
       alertMinute: map['alertMinute'] as int?,
+      endMode: endMode,
+      endDate: endDate,
+      endAfterDays: endAfterDays,
     );
   }
 
@@ -84,7 +127,7 @@ class FirestoreHabitRepository implements IHabitRepository {
     await _firestore
         .collection(_collection)
         .doc(habit.id)
-        .set(_toMap(habit));
+        .set(_toMap(habit, merge: false));
   }
 
   @override
@@ -101,7 +144,7 @@ class FirestoreHabitRepository implements IHabitRepository {
             completionDates: existing.completionDates,
             isCompleted: existing.completionDates.isNotEmpty,
           );
-    await docRef.set(_toMap(entityToWrite), SetOptions(merge: true));
+    await docRef.set(_toMap(entityToWrite, merge: true), SetOptions(merge: true));
   }
 
   @override

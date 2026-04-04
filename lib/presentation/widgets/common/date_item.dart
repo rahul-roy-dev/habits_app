@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
+import 'package:habits_app/core/theme/app_shadows.dart';
 
 class DateItem extends StatelessWidget {
   final DateTime date;
@@ -31,22 +32,13 @@ class DateItem extends StatelessWidget {
         ? AppColors.white
         : (isDark ? AppColors.secondaryText : AppColors.lightSecondaryText);
 
-    final content = Container(
+    final card = Container(
       width: AppDimensions.dateItemWidth,
       margin: const EdgeInsets.only(right: AppDimensions.spacingSm),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(AppDimensions.dateItemRadius),
-        boxShadow: highlighted
-            ? [
-                BoxShadow(
-                  color: (isDark ? AppColors.primaryAccent : AppColors.lightPrimaryAccent)
-                      .withValues(alpha: AppDimensions.opacityMd),
-                  blurRadius: AppDimensions.shadowBlurSm,
-                  offset: const Offset(0, AppDimensions.shadowOffsetY),
-                ),
-              ]
-            : null,
+        boxShadow: AppShadows.cardDrop(),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -86,9 +78,9 @@ class DateItem extends StatelessWidget {
       return GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: content,
+        child: card,
       );
     }
-    return content;
+    return card;
   }
 }

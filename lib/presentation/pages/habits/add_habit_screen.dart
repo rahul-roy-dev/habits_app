@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/services/notification_service.dart';
 import 'package:habits_app/presentation/widgets/common/custom_button.dart';
@@ -16,6 +17,8 @@ import 'package:habits_app/presentation/widgets/common/icon_picker.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/app_values.dart';
 import 'package:habits_app/core/constants/app_strings.dart';
+import 'package:habits_app/presentation/widgets/common/habits_app_bar.dart';
+import 'package:habits_app/presentation/widgets/common/habit_end_days_sheet.dart';
 
 class AddHabitScreen extends ConsumerStatefulWidget {
   final HabitEntity? habit;
@@ -75,16 +78,40 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
 
     if (widget.habit != null) {
       final existing = widget.habit!;
-      final updatedHabit = existing.copyWith(
-        title: _nameController.text.trim(),
-        description: '${formState.frequency} habit',
-        icon: formState.icon,
-        color: formState.color,
-        selectedWeekdays: selectedWeekdays,
-        alertHour: formState.remindersEnabled ? formState.alertHour : null,
-        alertMinute: formState.remindersEnabled ? formState.alertMinute : null,
-        clearAlertTime: !formState.remindersEnabled,
+      final resolved = HabitEntity.resolveEndFields(
+        endMode: formState.endMode,
+        anchorCreatedAt: existing.createdAt,
+        pickedEndDate: formState.endDate,
+        durationDays: formState.endAfterDays,
+        minDays: AppValues.habitEndDaysMin,
+        maxDays: AppValues.habitEndDaysMax,
+        defaultDays: AppValues.habitEndDaysDefault,
       );
+      final updatedHabit = formState.endMode == HabitEndMode.none
+          ? existing.copyWith(
+              title: _nameController.text.trim(),
+              description: '${formState.frequency} habit',
+              icon: formState.icon,
+              color: formState.color,
+              selectedWeekdays: selectedWeekdays,
+              alertHour: formState.remindersEnabled ? formState.alertHour : null,
+              alertMinute: formState.remindersEnabled ? formState.alertMinute : null,
+              clearAlertTime: !formState.remindersEnabled,
+              clearEnd: true,
+            )
+          : existing.copyWith(
+              title: _nameController.text.trim(),
+              description: '${formState.frequency} habit',
+              icon: formState.icon,
+              color: formState.color,
+              selectedWeekdays: selectedWeekdays,
+              alertHour: formState.remindersEnabled ? formState.alertHour : null,
+              alertMinute: formState.remindersEnabled ? formState.alertMinute : null,
+              clearAlertTime: !formState.remindersEnabled,
+              endMode: resolved.mode,
+              endDate: resolved.endDate,
+              endAfterDays: resolved.endAfterDays,
+            );
       await ref.read(habitProvider.notifier).updateHabit(widget.habit!.id, updatedHabit);
     } else {
       final authState = ref.read(authProvider);
@@ -97,6 +124,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
           selectedWeekdays: selectedWeekdays,
           alertHour: formState.remindersEnabled ? formState.alertHour : null,
           alertMinute: formState.remindersEnabled ? formState.alertMinute : null,
+          endMode: formState.endMode,
+          endOnDate: formState.endMode == HabitEndMode.onDate ? formState.endDate : null,
+          endAfterDaysCount:
+              formState.endMode == HabitEndMode.afterDays ? formState.endAfterDays : null,
         );
       }
     }
@@ -109,11 +140,13 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
     final formState = ref.watch(habitFormProvider(widget.habit));
     final formNotifier = ref.read(habitFormProvider(widget.habit).notifier);
 
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: HabitsAppBar(
+        title: widget.habit != null ? AppStrings.editHabit : AppStrings.createHabit,
+        backgroundColor: scaffoldBg,
         leading: Padding(
           padding: const EdgeInsets.only(left: AppDimensions.spacingMd),
           child: CustomIconButton(
@@ -122,14 +155,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
             isActive: false,
           ),
         ),
-        title: Text(
-          widget.habit != null ? AppStrings.editHabit : AppStrings.createHabit,
-          style: TextStyle(
-            color: isDark ? AppColors.primaryText : AppColors.lightPrimaryText,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(
@@ -139,6 +164,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
+                  clipBehavior: Clip.none,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -160,15 +186,18 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 ),
               ),
               SizedBox(height: AppDimensions.spacingMd),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: AppDimensions.gridCrossAxisCount,
-                  mainAxisSpacing: AppDimensions.spacingSm,
-                  crossAxisSpacing: AppDimensions.spacingSm,
-                ),
-                itemCount: _icons.length,
+              CustomCard(
+                showShadow: true,
+                padding: const EdgeInsets.all(AppDimensions.spacingSm),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: AppDimensions.gridCrossAxisCount,
+                    mainAxisSpacing: AppDimensions.spacingSm,
+                    crossAxisSpacing: AppDimensions.spacingSm,
+                  ),
+                  itemCount: _icons.length,
                   itemBuilder: (context, index) {
                     final item = _icons[index];
                     final isSelected = formState.icon == item['name'];
@@ -204,6 +233,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                       ),
                     );
                   },
+                ),
               ),
               SizedBox(height: AppDimensions.spacingXxl),
               Text(
@@ -258,11 +288,9 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 ),
               ),
               SizedBox(height: AppDimensions.spacingMd),
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.surface : AppColors.lightSurface,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                ),
+              CustomCard(
+                showShadow: true,
+                padding: EdgeInsets.zero,
                 child: Row(
                   children: [
                     Expanded(
@@ -321,7 +349,187 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 ),
               ],
               SizedBox(height: AppDimensions.spacingXxl),
+              Text(
+                AppStrings.endOn,
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.secondaryText
+                      : AppColors.lightSecondaryText,
+                  fontSize: AppDimensions.fontSizeXxs,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: AppDimensions.spacingMd),
               CustomCard(
+                showShadow: true,
+                padding: EdgeInsets.zero,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: FrequencyToggle(
+                        text: AppStrings.endOnNone,
+                        isSelected: formState.endMode == HabitEndMode.none,
+                        onTap: () => formNotifier.updateEndMode(HabitEndMode.none),
+                      ),
+                    ),
+                    Expanded(
+                      child: FrequencyToggle(
+                        text: AppStrings.endOnDate,
+                        isSelected: formState.endMode == HabitEndMode.onDate,
+                        onTap: () => formNotifier.updateEndMode(HabitEndMode.onDate),
+                      ),
+                    ),
+                    Expanded(
+                      child: FrequencyToggle(
+                        text: AppStrings.endOnDays,
+                        isSelected: formState.endMode == HabitEndMode.afterDays,
+                        onTap: () => formNotifier.updateEndMode(HabitEndMode.afterDays),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (formState.endMode == HabitEndMode.onDate) ...[
+                SizedBox(height: AppDimensions.spacingMd),
+                GestureDetector(
+                  onTap: () async {
+                    final first = widget.habit != null
+                        ? HabitEntity.normalizeDate(widget.habit!.createdAt)
+                        : HabitEntity.normalizeDate(DateTime.now());
+                    final initial = formState.endDate ?? first;
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: initial.isBefore(first) ? first : initial,
+                      firstDate: first,
+                      lastDate: DateTime(first.year + 5),
+                    );
+                    if (picked != null) {
+                      formNotifier.updateEndDate(picked);
+                    }
+                  },
+                  child: CustomCard(
+                    showShadow: true,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppDimensions.spacingMd,
+                      horizontal: AppDimensions.spacingMd,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: AppDimensions.iconSizeSm,
+                          color: isDark
+                              ? AppColors.secondaryText
+                              : AppColors.lightSecondaryText,
+                        ),
+                        SizedBox(width: AppDimensions.spacingSm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppStrings.habitEndsOnDateHint,
+                                style: TextStyle(
+                                  fontSize: AppDimensions.fontSizeXxs,
+                                  color: isDark
+                                      ? AppColors.secondaryText
+                                      : AppColors.lightSecondaryText,
+                                ),
+                              ),
+                              Text(
+                                formState.endDate != null
+                                    ? DateFormat.yMMMd().format(formState.endDate!)
+                                    : '—',
+                                style: TextStyle(
+                                  fontSize: AppDimensions.fontSizeXl,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? AppColors.primaryText
+                                      : AppColors.lightPrimaryText,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: isDark
+                              ? AppColors.secondaryText
+                              : AppColors.lightSecondaryText,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              if (formState.endMode == HabitEndMode.afterDays) ...[
+                SizedBox(height: AppDimensions.spacingMd),
+                GestureDetector(
+                  onTap: () async {
+                    final result = await showHabitEndDaysSheet(
+                      context,
+                      initialDays: formState.endAfterDays,
+                    );
+                    if (result != null) {
+                      formNotifier.updateEndAfterDays(result);
+                    }
+                  },
+                  child: CustomCard(
+                    showShadow: true,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppDimensions.spacingMd,
+                      horizontal: AppDimensions.spacingMd,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.timelapse_outlined,
+                          size: AppDimensions.iconSizeSm,
+                          color: isDark
+                              ? AppColors.secondaryText
+                              : AppColors.lightSecondaryText,
+                        ),
+                        SizedBox(width: AppDimensions.spacingSm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppStrings.habitEndsAfterDaysHint,
+                                style: TextStyle(
+                                  fontSize: AppDimensions.fontSizeXxs,
+                                  color: isDark
+                                      ? AppColors.secondaryText
+                                      : AppColors.lightSecondaryText,
+                                ),
+                              ),
+                              Text(
+                                '${formState.endAfterDays} ${AppStrings.habitEndDaysSuffix}',
+                                style: TextStyle(
+                                  fontSize: AppDimensions.fontSizeXl,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? AppColors.primaryText
+                                      : AppColors.lightPrimaryText,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: isDark
+                              ? AppColors.secondaryText
+                              : AppColors.lightSecondaryText,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              SizedBox(height: AppDimensions.spacingXxl),
+              CustomCard(
+                showShadow: true,
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.spacingMd,
                   vertical: AppDimensions.spacingXs,
@@ -362,25 +570,20 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                           final time = await showTimePicker(
                             context: context,
                             initialTime: TimeOfDay(
-                              hour: formState.alertHour ?? 9,
-                              minute: formState.alertMinute ?? 0,
+                              hour: formState.alertHour ?? AppValues.defaultAlertHour,
+                              minute: formState.alertMinute ?? AppValues.defaultAlertMinute,
                             ),
                           );
                           if (time != null) {
                             formNotifier.updateAlertTime(time.hour, time.minute);
                           }
                         },
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppDimensions.spacingSm,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDark ? AppColors.surface : AppColors.lightSurface,
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                            ),
-                            child: Row(
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppDimensions.spacingSm,
+                          ),
+                          child: Row(
                             children: [
                               Icon(
                                 LucideIcons.clock,
@@ -419,22 +622,21 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                               ),
                             ],
                           ),
-                          ),
                         ),
                       ),
                     ],
                   ],
                 ),
               ),
-                      SizedBox(height: AppDimensions.spacingXxl),
+                      SizedBox(height: AppDimensions.habitFormSaveButtonTopSpacing),
+                      CustomButton(
+                        text: widget.habit != null ? AppStrings.updateHabit : AppStrings.saveHabit,
+                        onPressed: _handleSave,
+                      ),
+                      SizedBox(height: AppDimensions.habitFormSaveButtonBottomSpacing),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: AppDimensions.spacingMd),
-              CustomButton(
-                text: widget.habit != null ? AppStrings.updateHabit : AppStrings.saveHabit,
-                onPressed: _handleSave,
               ),
             ],
           ),

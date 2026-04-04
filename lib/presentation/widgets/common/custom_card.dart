@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habits_app/core/theme/app_colors.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
+import 'package:habits_app/core/theme/app_shadows.dart';
 
 class CustomCard extends StatelessWidget {
   final Widget child;
@@ -8,6 +9,7 @@ class CustomCard extends StatelessWidget {
   final double? borderRadius;
   final bool showShadow;
   final Color? color;
+  final BoxBorder? border;
 
   const CustomCard({
     super.key,
@@ -16,6 +18,7 @@ class CustomCard extends StatelessWidget {
     this.borderRadius,
     this.showShadow = false,
     this.color,
+    this.border,
   });
 
   @override
@@ -26,15 +29,8 @@ class CustomCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color ?? (isDark ? AppColors.surface : AppColors.lightSurface),
         borderRadius: BorderRadius.circular(borderRadius ?? AppDimensions.radiusMd),
-        boxShadow: showShadow
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: AppDimensions.opacitySm),
-                  blurRadius: AppDimensions.shadowBlurSm,
-                  offset: const Offset(0, AppDimensions.shadowOffsetY),
-                ),
-              ]
-            : null,
+        border: border,
+        boxShadow: showShadow ? AppShadows.cardDrop() : null,
       ),
       child: child,
     );

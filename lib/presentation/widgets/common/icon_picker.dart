@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:habits_app/core/constants/app_dimensions.dart';
 import 'package:habits_app/core/constants/lucide_icons_list.dart';
+import 'package:habits_app/presentation/widgets/common/app_modal_bottom_sheet.dart';
 
 class IconPickerResult {
   final String name;
@@ -14,10 +15,9 @@ Future<IconPickerResult?> showIconPicker(
   Color? accentColor,
   IconData? initialIcon,
 }) {
-  return showModalBottomSheet<IconPickerResult>(
+  return showAppModalBottomSheet<IconPickerResult>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
     builder: (_) => IconPickerSheet(
       accentColor: accentColor ?? Theme.of(context).colorScheme.primary,
       initialIcon: initialIcon,
@@ -114,14 +114,14 @@ class _IconPickerSheetState extends State<IconPickerSheet> {
       snap: true,
       snapSizes: AppDimensions.iconPickerSnapSizes,
       builder: (ctx, scrollCtrl) {
-        return Container(
-          decoration: BoxDecoration(
-            color: scheme.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppDimensions.iconPickerSheetBorderRadius),
-            ),
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppDimensions.iconPickerSheetBorderRadius),
           ),
-          child: Column(
+          child: Material(
+            color: scheme.surface,
+            elevation: 0,
+            child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.only(
@@ -366,6 +366,7 @@ class _IconPickerSheetState extends State<IconPickerSheet> {
                       ),
               ),
             ],
+          ),
           ),
         );
       },
