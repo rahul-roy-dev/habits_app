@@ -8,7 +8,6 @@ import 'package:habits_app/presentation/widgets/common/custom_avatar.dart';
 import 'package:habits_app/presentation/pages/achievements/achievements_screen.dart';
 import 'package:habits_app/presentation/widgets/common/header_icon.dart';
 import 'package:habits_app/presentation/widgets/common/date_item.dart';
-import 'package:habits_app/presentation/widgets/common/claim_button.dart';
 import 'package:habits_app/presentation/widgets/common/filter_chips.dart';
 import 'package:habits_app/presentation/widgets/common/sort_order_chip.dart';
 import 'package:habits_app/presentation/providers/habit_provider.dart';

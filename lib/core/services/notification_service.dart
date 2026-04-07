@@ -25,6 +25,8 @@ class NotificationService {
   bool _isReminderOverlayVisible = false;
   ReminderOverlayNavigator? _overlayNavigator;
 
+  static const String _kNativePendingHabitIdKey = 'flutter.alarm_pending_habit_id';
+
   /// Injected by composition root (main). Core depends on abstraction only (DIP).
   void setReminderOverlayNavigator(ReminderOverlayNavigator navigator) {
     _overlayNavigator = navigator;
@@ -32,9 +34,17 @@ class NotificationService {
 
   Future<void> cancelActiveNotificationForHabit(String habitId) async {
     final notificationId = habitId.hashCode;
-    await _notifications.cancel(notificationId);
+    try {
+      await _notifications.cancel(notificationId);
+    } catch (e) {
+      debugPrint('cancelActiveNotificationForHabit: cancel failed: $e');
+    }
     for (var weekday = AppValues.weekdayFirst; weekday <= AppValues.weekdayLast; weekday++) {
-      await _notifications.cancel(notificationId + weekday);
+      try {
+        await _notifications.cancel(notificationId + weekday);
+      } catch (e) {
+        debugPrint('cancelActiveNotificationForHabit: weekday cancel failed: $e');
+      }
     }
   }
 
@@ -77,6 +87,57 @@ class NotificationService {
 
     _initialized = true;
     _startForegroundMonitoring();
+
+    // If an alarm fired while we were killed, show the overlay as soon as we can.
+    // (AlarmReceiver writes this key before launching the FSI activity chain.)
+    await handlePendingNativeAlarmLaunch();
+  }
+
+  /// If the native AlarmManager pipeline fired while Flutter was killed/backgrounded,
+  /// `AlarmReceiver` stores a pending habit id in SharedPreferences. Consume it and
+  /// show the reminder overlay immediately.
+  Future<void> handlePendingNativeAlarmLaunch() async {
+    if (!_initialized) return;
+    if (_isReminderOverlayVisible) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final habitId = prefs.getString(_kNativePendingHabitIdKey);
+    if (habitId == null || habitId.isEmpty) return;
+
+    // Clear first to avoid loops if anything fails.
+    await prefs.remove(_kNativePendingHabitIdKey);
+
+    HabitEntity? habit;
+    for (final h in _monitoredHabits) {
+      if (h.id == habitId) {
+        habit = h;
+        break;
+      }
+    }
+    habit ??= await sl<IHabitReader>().getHabitById(habitId);
+    if (habit == null) return;
+
+    final now = DateTime.now();
+    final slotKey = _reminderSlotKey(habit, now);
+    if (_pendingAckSlotKeys.contains(slotKey)) return;
+    if (prefs.get(slotKey) != null) return;
+
+    _pendingAckSlotKeys.add(slotKey);
+    await prefs.setString(slotKey, '1');
+    _isReminderOverlayVisible = true;
+
+    try {
+      await cancelActiveNotificationForHabit(habitId);
+    } catch (e) {
+      debugPrint('handlePendingNativeAlarmLaunch: cancelActiveNotificationForHabit failed: $e');
+    }
+
+    _overlayNavigator?.pushReminderOverlay(
+      habitId: habitId,
+      reminderSlotKey: slotKey,
+      habit: habit,
+      onPopped: () => _isReminderOverlayVisible = false,
+    );
   }
 
   void updateMonitoredHabits(List<HabitEntity> habits) {
@@ -135,8 +196,11 @@ class NotificationService {
     await prefs.setString(slotKey, '1');
     _isReminderOverlayVisible = true;
 
-    // Cancel the system notification (and its sound) since we are showing
-    await cancelActiveNotificationForHabit(habit.id);
+    try {
+      await cancelActiveNotificationForHabit(habit.id);
+    } catch (e) {
+      debugPrint('_showForegroundOverlay: cancelActiveNotificationForHabit failed: $e');
+    }
 
     debugPrint('Triggering foreground overlay for ${habit.id}');
     _overlayNavigator?.pushReminderOverlay(
@@ -434,16 +498,27 @@ class NotificationService {
 
   Future<void> cancelHabitReminder(String habitId) async {
     final notificationId = habitId.hashCode;
-    await _notifications.cancel(notificationId);
+    try {
+      await _notifications.cancel(notificationId);
+    } catch (e) {
+      debugPrint('cancelHabitReminder: cancel failed: $e');
+    }
 
-    // Cancel all weekday-based notifications (1-7)
     for (var weekday = AppValues.weekdayFirst; weekday <= AppValues.weekdayLast; weekday++) {
-      await _notifications.cancel(notificationId + weekday);
+      try {
+        await _notifications.cancel(notificationId + weekday);
+      } catch (e) {
+        debugPrint('cancelHabitReminder: weekday cancel failed: $e');
+      }
     }
   }
 
   Future<void> cancelAllNotifications() async {
-    await _notifications.cancelAll();
+    try {
+      await _notifications.cancelAll();
+    } catch (e) {
+      debugPrint('cancelAllNotifications: cancelAll failed: $e');
+    }
   }
 
 
@@ -464,6 +539,30 @@ class NotificationService {
         await const MethodChannel('com.example.habits_app/full_screen_intent')
             .invokeMethod<void>('openFullScreenIntentSettings');
       } catch (_) {}
+    }
+  }
+
+  /// Android 14+ only: whether the OS currently allows full-screen intents.
+  ///
+  /// - Returns `true` on Android <= 13 (no special access gate).
+  /// - Returns `false` on Android 14+ if the user (or Play enforcement) has denied it.
+  /// - Returns `null` if the platform call isn't available (non-Android / web).
+  static Future<bool?> canUseFullScreenIntent() async {
+    if (kIsWeb) return null;
+    try {
+      return await const MethodChannel('com.example.habits_app/full_screen_intent')
+          .invokeMethod<bool>('canUseFullScreenIntent');
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Ensures the user is directed to the Android 14+ "Full screen intents" setting
+  /// when FSI is denied.
+  static Future<void> ensureFullScreenIntentEnabled() async {
+    final canUse = await canUseFullScreenIntent();
+    if (canUse == false) {
+      await openFullScreenIntentSettings();
     }
   }
 }

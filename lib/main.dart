@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:habits_app/domain/entities/habit_entity.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_theme.dart';
 import 'core/di/service_locator.dart';
 import 'core/services/notification_service.dart';
@@ -59,10 +60,29 @@ class HabitlyApp extends ConsumerStatefulWidget {
 }
 
 class _HabitlyAppState extends ConsumerState<HabitlyApp> with WidgetsBindingObserver {
+  static const String _kDidRequestReminderPermsKey = 'did_request_reminder_perms_v1';
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _ensureReminderPermissionsOnce();
+      // If an alarm fired while the app was killed, process it on first frame.
+      await NotificationService().handlePendingNativeAlarmLaunch();
+    });
+  }
+
+  Future<void> _ensureReminderPermissionsOnce() async {
+    final prefs = await SharedPreferences.getInstance();
+    final already = prefs.getBool(_kDidRequestReminderPermsKey) ?? false;
+    if (already) return;
+
+    await NotificationService().requestPermission();
+    await NotificationService.ensureFullScreenIntentEnabled();
+
+    await prefs.setBool(_kDidRequestReminderPermsKey, true);
   }
 
   @override
@@ -76,6 +96,7 @@ class _HabitlyAppState extends ConsumerState<HabitlyApp> with WidgetsBindingObse
     if (state == AppLifecycleState.resumed) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         NotificationService().handleAppResumed();
+        NotificationService().handlePendingNativeAlarmLaunch();
       });
     }
   }
